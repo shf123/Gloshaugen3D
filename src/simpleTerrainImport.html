@@ -1,0 +1,145 @@
+<html>
+	<head>
+	
+	</head>
+	
+	<body>
+	
+	<!-- R66 of Three.js-->
+	<script src="../libs/threeR66.min.js"></script>
+	<script src="../libs/jquery-2.1.0.min.js"></script>
+	<script src="../libs/TrackballControls.js"></script>
+
+	<h3> Simple Terrain </h3>
+	<div id="threejs"></div>
+	
+	<script>
+		// use strict version of js
+		"use strict";
+		
+		var scene, camera, renderer, controls;
+		var debugVariable;
+		
+		function init() {
+			
+			
+			var width = window.innerWidth;
+			var height = window.innerHeight;
+
+			// scene 
+			scene = new THREE.Scene();
+
+			// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
+			camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
+			camera.position.z = 100;
+
+			// controls
+			controls = new THREE.TrackballControls( camera );
+
+			// renderer
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( width, height );
+			document.getElementById( "threejs" ).appendChild( renderer.domElement );
+			
+			
+			// terrain
+			var terrainFile = "../assets/gloshaugen.xyz";
+			$.get( terrainFile, function(data) {
+				var terrain = data.replace(/"/g,'').split("\n");
+				terrain.pop(); // since the last line in the file "gloshaugen.xyz" is empty
+								
+				
+				var terrainWidth = 200; 
+				var terrainHeight = 200; 
+				 
+				 // hardcoded ratio based on clipping parameters in gdal :(. TODO: Those can also be calculated by going through the terrain array
+				var bbox = "569900,7032300,570500,7033300";
+				var widthHeightRatio = Math.abs((569900-570500)/(7032300-7033300)); // = 0.6
+				var widthVertices = Math.sqrt(terrain.length * widthHeightRatio); 
+				var heightVertices = terrain.length / widthVertices; 
+				 
+				var widthSegments = widthVertices - 1;
+				var heightSegments = heightVertices - 1;
+				
+				
+		
+				console.log("Make PlaneGeometry");
+				var terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
+				
+				
+				console.log("Make Material");
+				//var material = new THREE.MeshLambertMaterial( {map: getMapTextureOpenWMS(bbox, 200, 200) }); // commented because of error mention over the function getMapTextureOpenWMS()
+				var material = new THREE.MeshLambertMaterial( {map: THREE.ImageUtils.loadTexture('../assets/printScreenGlos2.png')}); // print screen is taken from http://kart.finn.no/ as a temporary solution
+				//material.wireframe = true // for debugging purposes
+				
+				console.log("Make Mesh");
+				var terrainMesh = new THREE.Mesh( terrainGeometry, material);
+				
+				// add the height values 
+				for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
+									
+					terrainGeometry.vertices[i].z = terrain[i].split(" ")[2];			
+	
+				}
+					
+				scene.add( terrainMesh );
+				
+				
+				
+				// Just a test with a cube
+				var testCube = new THREE.CubeGeometry(1,2,3);
+				var mat =new THREE.MeshBasicMaterial({color: 0x555500});
+				var cube = new THREE.Mesh( testCube, mat );
+				scene.add(cube);
+				
+				// light
+				var light = new THREE.AmbientLight( 0x707070 ) ;
+				light.position = camera.position;
+				scene.add( light );
+
+				var light2 = new THREE.DirectionalLight( 0x444444 );
+				light2.position = camera.position;
+				scene.add( light2 );
+				
+				
+				render();
+			});
+			
+			
+			
+		}
+		
+
+		var render = function ()  {
+			requestAnimationFrame( render );
+
+			controls.update();
+			renderer.render( scene, camera );
+			return;
+		};
+
+		init();
+		
+		// I am getting the error: "Uncaught SecurityError: Failed to execute 'texImage2D' on 'WebGLRenderingContext': // The cross-origin image at http://openwms.statkart.no/skwms1/wms.topo2?service=wms&version=1.3.0&reque
+		// …delag,N500Tettsted&bbox=569900,7032300,570500,7033300&WIDTH=200&HEIGHT=200 may not be loaded. "
+		function getMapTextureOpenWMS(bbox, width, height) {
+			var path = "http://openwms.statkart.no/skwms1/wms.topo2" +
+			 "?service=wms&version=1.3.0&request=getmap&crs=";
+			var crs = "EPSG:32632";
+			var srs = "EPSG:32632"; // = crs
+			var format = "image/png";
+			var layers='N5000Hoydelag,N500Tettsted';
+			
+			var url = path + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
+			+ bbox + '&WIDTH=' + width + '&HEIGHT=' + height;
+			
+			console.log("texture url: " + url);
+			return THREE.ImageUtils.loadTexture(url);
+
+		} 
+		
+	
+	</script>
+	
+	</body>
+</html>
