@@ -9,16 +9,19 @@
 	<script src="../libs/threeR66.min.js"></script>
 	<script src="../libs/jquery-2.1.0.min.js"></script>
 	<script src="../libs/TrackballControls.js"></script>
+	<script src="./topo2.layers.js"></script>
 
 	<h3> Simple Terrain </h3>
 	<div id="threejs"></div>
 	
-	<script>
+	<script>	
 		// use strict version of js
 		"use strict";
-		
+            
 		var scene, camera, renderer, controls;
 		var debugVariable;
+		
+		init();
 		
 		function init() {
 			
@@ -67,10 +70,14 @@
 				var terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
 				
 				
+
+				var useNorgeIBilder = false;
+				if ( getParameterFromUrl( "norgeIBilder" ) === "true" ) {
+					useNorgeIBilder = true;
+				}
+
 				console.log("Make Material");
-				//var material = new THREE.MeshLambertMaterial( {map: getMapTextureOpenWMS(bbox, 200, 200) }); // commented because of error mention over the function getMapTextureOpenWMS()
-				var material = new THREE.MeshLambertMaterial( {map: THREE.ImageUtils.loadTexture('../assets/printScreenGlos2.png')}); // print screen is taken from http://kart.finn.no/ as a temporary solution
-				//material.wireframe = true // for debugging purposes
+				var material = new THREE.MeshLambertMaterial( {map: getMapTextureWms( bbox, 1000, 1000, useNorgeIBilder ) }); 
 				
 				console.log("Make Mesh");
 				var terrainMesh = new THREE.Mesh( terrainGeometry, material);
@@ -93,7 +100,7 @@
 				scene.add(cube);
 				
 				// light
-				var light = new THREE.AmbientLight( 0x707070 ) ;
+				var light = new THREE.AmbientLight( 0xababab ) ;
 				light.position = camera.position;
 				scene.add( light );
 
@@ -118,25 +125,57 @@
 			return;
 		};
 
-		init();
-		
-		// I am getting the error: "Uncaught SecurityError: Failed to execute 'texImage2D' on 'WebGLRenderingContext': // The cross-origin image at http://openwms.statkart.no/skwms1/wms.topo2?service=wms&version=1.3.0&reque
-		// …delag,N500Tettsted&bbox=569900,7032300,570500,7033300&WIDTH=200&HEIGHT=200 may not be loaded. "
-		function getMapTextureOpenWMS(bbox, width, height) {
-			var path = "http://openwms.statkart.no/skwms1/wms.topo2" +
-			 "?service=wms&version=1.3.0&request=getmap&crs=";
-			var crs = "EPSG:32632";
-			var srs = "EPSG:32632"; // = crs
-			var format = "image/png";
-			var layers='N5000Hoydelag,N500Tettsted';
+		function getMapTextureWms(bbox, width, height, useNorgeIBilder) {
 			
-			var url = path + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
+			var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
+			var kartverketOpenWms = "http://openwms.statkart.no/skwms1/wms.topo2";
+			
+			var path = "";
+			var layers = "";
+			
+			console.log("norgeIBilder = " + useNorgeIBilder + " type: " + typeof(useNorgeIBilder));
+			if ( useNorgeIBilder === true ) {
+				console.log("NorgeIBilder");
+				path = norgeIBilder;
+				layers = "OrtofotoAlle";
+			}
+			else {
+				console.log("OpenWms");
+				path = kartverketOpenWms;
+				layers = topo2layers;
+			}
+			
+			path += "?service=wms&version=1.3.0&request=getmap";
+			var crs = "EPSG:32632"; // WGS 84 / UTM zone 32N
+			var srs = "EPSG:32632"; 
+			var format = "image/png";
+			
+			
+			var url = path + '&crs=' + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
 			+ bbox + '&WIDTH=' + width + '&HEIGHT=' + height;
 			
 			console.log("texture url: " + url);
-			return THREE.ImageUtils.loadTexture(url);
+			var imageUtilsCors = THREE.ImageUtils;
+			imageUtilsCors.crossOrigin = 'anonymous'; // From Release 65 of THREE.js this line is necessary
+			
+			return imageUtilsCors.loadTexture(url);
 
 		} 
+		
+		// Returns value of parameter if it exist. 
+		function getParameterFromUrl( parameter ) {
+			var urlParameters = window.location.search.substring(1);
+			var parameters = urlParameters.split("&");
+			
+			for (var i = 0; i < parameters.length; i++ ) {
+				var keyValue = parameters[i].split("=");
+				if (keyValue[0] === parameter) {
+					return keyValue[1];
+				}	
+			}
+			
+			return undefined;
+		}
 		
 	
 	</script>
