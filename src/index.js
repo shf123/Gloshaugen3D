@@ -2,6 +2,7 @@
 //"use strict";
     
 var scene, camera, renderer, controls;
+var debug = getParameterFromUrl("debug") || false; // show some debug info
 var debugVariable;
 
 init();
@@ -19,6 +20,7 @@ function init() {
 	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
 	camera.position.z = 100;
 
+
 	// controls
 	controls = new THREE.TrackballControls( camera );
 
@@ -28,6 +30,8 @@ function init() {
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
 	
 	
+	
+
 	// terrain
 	var terrainFile = "../assets/gloshaugen.xyz";
 	$.get( terrainFile, function(data) {
@@ -52,7 +56,7 @@ function init() {
 
 		  scaleX = Math.abs(terrainWidth/(569900-570500));
 		  scaleY = Math.abs(terrainHeight/(7032300-7033300));
-
+		  scaleZ = Math.abs(1);
 
 		console.log("Make PlaneGeometry");
 		 terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
@@ -69,18 +73,53 @@ function init() {
 		
 		console.log("Make Mesh");
 		var terrainMesh = new THREE.Mesh( terrainGeometry, material);
-		
+		terrainMesh.name = "Terrain";
+
 		// add the height values 
 		for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
 							
-			terrainGeometry.vertices[i].z = terrain[i].split(" ")[2];			
+			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2];			
 
 		}
 			
 		scene.add( terrainMesh );
 		
+		var objtype = getParameterFromUrl("model") || "collada";
+		if (objtype === "obj") {
+			// Add hovedbygget from a .obj-file. Based on some hard coding
+			var objLoader = new THREE.OBJMTLLoader();
+			objLoader.load ( "../assets/3D-models/hovedbygget.obj", 
+								"../assets/3D-models/hovedbygget.mtl",
+								function ( result ) {
+									obj = result;
+									result.scale.x *= scaleX;
+									result.scale.z *= scaleY;
+									result.scale.y = 0.5;
 
-		// Add hovedbygget. Based on some hard coding
+									result.position.x = (building1.X - averageX)*scaleX;
+									result.position.y = (building1.Y - averageY)*scaleY;
+
+
+									result.position.z = 1*getZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
+
+									
+									result.lookAt(new THREE.Vector3( result.position.x, result.position.y, 0 ));
+
+									scene.add(result);
+
+									// debugging
+									if (debug) {
+										boundingBoxHovedbygg = new THREE.BoundingBoxHelper( result, 0xffff00 );
+										scene.add(boundingBoxHovedbygg);
+									}
+
+									render();
+
+			});
+			
+		}
+		else {
+		// Add hovedbygget from a .dae-file. Based on some hard coding
 		var loader = new THREE.ColladaLoader();
 		// global from import3dBuildings.js: building1
 		loader.load (building1.path, function (result) {
@@ -91,8 +130,8 @@ function init() {
 			result.scene.position.x = (building1.X - averageX)*scaleX;
 			result.scene.position.y = (building1.Y - averageY)*scaleY;
 
-			
-			result.scene.position.z = getZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
+			// 10 + : hardcoded correction for this specific case
+			result.scene.position.z = 10 + getZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
 
 			//result.scene.rotation.z = building1.heading;
 
@@ -100,22 +139,47 @@ function init() {
 
 			globCol = result;
 
+			// debugging
+			if (debug) {
+				boundingBoxHovedbygg = new THREE.BoundingBoxHelper( globCol.scene, 0xffff00 );
+				scene.add(boundingBoxHovedbygg);
+			}
+
+			render();
 
 		});
+		
+		}
 
-
-	
 		// light
-		var light = new THREE.AmbientLight( 0xababab ) ;
-		light.position = camera.position;
-		scene.add( light );
+			var light = new THREE.AmbientLight( 0xababab ) ;
+			light.position = camera.position;
+			scene.add( light );
 
-		var light2 = new THREE.DirectionalLight( 0x444444 );
-		light2.position = camera.position;
-		scene.add( light2 );
-		
-		
-		render();
+			var light2 = new THREE.DirectionalLight( 0x444444 );
+			light2.position = camera.position;
+			scene.add( light2 );
+			
+
+			// Debug geometries
+			// create axis helper (for debugging)
+			if (debug) {
+			var axisHelper = new THREE.AxisHelper( 500 );
+			scene.add( axisHelper );
+			
+			boundingBoxTerrain = new THREE.BoundingBoxHelper( terrainMesh, 0xffff00 );
+			scene.add(boundingBoxTerrain);
+			
+			gridHelper = new THREE.GridHelper( 150,10 );
+			gridHelper.setColors( 0x888822, 0x888888 );
+			gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
+			scene.add(gridHelper);
+
+			}
+			
+
+			
+
 	});
 	
 	
@@ -128,6 +192,12 @@ var render = function ()  {
 
 	controls.update();
 	renderer.render( scene, camera );
+
+	if (debug) {
+		boundingBoxTerrain.update();
+		boundingBoxHovedbygg.update();
+	}
+
 	return;
 };
 
@@ -162,9 +232,9 @@ function getZValue(x, y, scaleX, scaleY, averageX, averageY, widthVertices, heig
 function getMapTextureWms(bbox, width, height, useNorgeIBilder) {
 	
 	// temp 
-	if ( window.location.origin === "http://localhost:8000") {
+	/*if ( window.location.origin === "http://localhost:8000") {
 		return  THREE.ImageUtils.loadTexture("../assets/texture.png");
-	}
+	}*/
 
 	var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
 	var kartverketOpenWms = "http://openwms.statkart.no/skwms1/wms.topo2";

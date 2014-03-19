@@ -6,7 +6,9 @@
 	<body>
 	
 	<!-- R66 of Three.js-->
-	<script src="../libs/threeR66.min.js"></script>
+	<script src="../libs/threeR66.js"></script>
+	<!--<script src="../libs/threeR66.min.js"></script> -->
+	
 	<script src="../libs/jquery-2.1.0.min.js"></script>
 	
 	<!-- Orient camera with mouse -->
@@ -15,11 +17,13 @@
 	<!-- List of layers in topo2 from kartverket -->
 	<script src="./topo2.layers.js"></script>
 
-	<!-- For loading .dae files -->
-	<script src="../libs/ColladaLoader.js"></script>
+	<!-- Library for loading .dae files -->
+	<script src="../libs/loaders/ColladaLoader.js"></script>
 
+	<!-- Library for loading .obj files -->
+	<script type="text/javascript" src="../libs/loaders/OBJMTLLoader.js"></script>
+	<script type="text/javascript" src="../libs/loaders/MTLLoader.js"></script>
 
-	
 
 	<h3> Simple Terrain </h3>
 	<div id="threejs"></div>

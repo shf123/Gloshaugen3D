@@ -1,0 +1,271 @@
+# Blender MTL File: 'None'
+# Material Count: 27
+
+newmtl Bakside-SØR_-venstre-side
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Bakside-S_R_-venstre-side.jpg
+
+newmtl Bakside-høyre-side-bak-hovedbygget
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Bakside-h_yre-side-bak-hovedbygget.jpg
+
+newmtl Framside-høyre-og-venstre
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Framside-h_yre-og-venstre.jpg
+
+newmtl Glasstaket-til-fronten-og-bakre-toppmøne
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Glasstaket-til-fronten-og-bakre-toppm_ne.jpg
+
+newmtl Helt-øverst_-Topptekstur-på-tårnet_-kanter-øverst
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Helt-_verst_-Topptekstur-p_-t_rnet_-kanter-_verst.jpg
+
+newmtl Hoved-forside-mot-SØR_-brun-med-8-vinduer
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Hoved-forside-mot-S_R_-brun-med-8-vinduer.jpg
+
+newmtl Hovedstruktur-på-tårnet_-med-kant-og-et-vindu
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Hovedstruktur-p_-t_rnet_-med-kant-og-et-vindu.jpg
+
+newmtl Hvitt_tak
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Hvitt_tak.jpg
+
+newmtl Høyre-og-venstre-side-av-nederst-på-bygget-SØR-ut-mot-plenen
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\H_yre-og-venstre-side-av-nederst-p_-bygget-S_R-ut-mot-plenen_-hvit-og-har-vinduer.jpg
+
+newmtl Høyre-og-venstre-side-for-hovedbygget-ved-triangel
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\H_yre-og-venstre-side-for-hovedbygget-ved-triangel.jpg
+
+newmtl Høyre-og-venstre-side-hovedbygget
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\H_yre-og-venstre-side-hovedbygget.jpg
+
+newmtl Midtre-del-av-hovedbygget
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Midtre-del-av-hovedbygget.jpg
+
+newmtl Nedre-side-av-bygget_--bakerste-bygget-mot-SØR_-hvit-med-mange
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Nedre-side-av-bygget_--bakerste-bygget-mot-S_R_-hvit-med-mange-vinduer-inn-mot-smugene.jpg
+
+newmtl Remse-avMidtside-av-nederst-på-bygget-SØR_-grå-og-hvit_-ut-m
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Remse-avMidtside-av-nederst-p_-bygget-S_R_-gr_-og-hvit_-ut-mot-plenen-med-vinduer.jpg
+
+newmtl Sidevegger-av-nederst-på-bygget-SØR_-med-et-vindu-og-luftvent
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Sidevegger-av-nederst-p_-bygget-S_R_-med-et-vindu-og-luftventilasjon_.jpg
+
+newmtl Sidevegger-av-Øvrebygget-på-bygget-SØR_-Brun-med-4-vinduer-o
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Sidevegger-av-_vrebygget-p_-bygget-S_R_-Brun-med-4-vinduer-oppe-kvadratisk_.jpg
+
+newmtl Smuget-innvendig-tektrur-for-å-legge-på-andre_-vegg-mot-sør-
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Smuget-innvendig-tektrur-for-_-legge-p_-andre_-vegg-mot-s_r-trevinduer.jpg
+
+newmtl Taktekstur-for-toppen-av-hovedbygget
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Taktekstur-for-toppen-av-hovedbygget.jpg
+
+newmtl Tekstur-til-mur
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Tekstur-til-mur.jpg
+
+newmtl Topptrekant-på-siden-av-hovedbygget
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Topptrekant-p_-siden-av-hovedbygget.jpg
+
+newmtl Topptrekant-på-siden-av-hovedbygget_0
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Topptrekant-p_-siden-av-hovedbygget_0.jpg
+
+newmtl Trekant-på-toppen_-avsluttende-bilde
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\Trekant-p_-toppen_-avsluttende-bilde.jpg
+
+newmtl material
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.712157 0.705882 0.696471
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl tak_småbygg_bak
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\tak_sm_bygg_bak.jpg
+
+newmtl tekstur_til_trapp2
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\tekstur_til_trapp2.jpg
+
+newmtl tekstur_til_trapp2_1
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\tekstur_til_trapp2_1.jpg
+
+newmtl triangel-bakside-hovedbygg-med-toppmøne_-grå
+Ns 96.078431
+Ka 0.900000 0.900000 0.900000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd \\Grp 7 Hovedbygg Gloshaugen\\triangel-bakside-hovedbygg-med-toppm_ne_-gr_.jpg
