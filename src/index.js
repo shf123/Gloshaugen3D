@@ -123,6 +123,7 @@ function init() {
 		var loader = new THREE.ColladaLoader();
 		// global from import3dBuildings.js: building1
 		loader.load (building1.path, function (result) {
+			console.log("3d model path: " + building1.path);
 
 			result.scene.scale.x *= scaleX;
 			result.scene.scale.y *= scaleY;
@@ -232,9 +233,9 @@ function getZValue(x, y, scaleX, scaleY, averageX, averageY, widthVertices, heig
 function getMapTextureWms(bbox, width, height, useNorgeIBilder) {
 	
 	// temp 
-	/*if ( window.location.origin === "http://localhost:8000") {
+	if ( window.location.origin === "http://localhost:8000") {
 		return  THREE.ImageUtils.loadTexture("../assets/texture.png");
-	}*/
+	}
 
 	var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
 	var kartverketOpenWms = "http://openwms.statkart.no/skwms1/wms.topo2";

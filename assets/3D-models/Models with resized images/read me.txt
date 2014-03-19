@@ -1,0 +1,6 @@
+After resizing all the texture images to a size of type 2^x, in this case
+128x128, most of the texture drawing issues disappeared. 
+On Hovedbygget, a two parts of the roof is still missing.
+The first is "Glasstaket-til-fronten-og-bakre-toppm_ne.jpg"
+and either "Topptrekant-p_-siden-av-hovedbygget.jpg" or 
+"Topptrekant-p_-siden-av-hovedbygget_0.jpg"
