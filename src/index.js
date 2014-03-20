@@ -4,6 +4,7 @@
 var scene, camera, renderer, controls;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
 var debugVariable;
+var terrainGeometry;
 
 init();
 
@@ -43,21 +44,23 @@ function init() {
 		var terrainHeight = 200; 
 		 
 		 // hardcoded ratio based on clipping parameters in gdal :(. TODO: Those can also be calculated by going through the terrain array
-		var bbox = "569900,7032300,570500,7033300";
-		var widthHeightRatio = Math.abs((569900-570500)/(7032300-7033300)); // = 0.6
-		var widthVertices = Math.sqrt(terrain.length * widthHeightRatio); 
-		var heightVertices = terrain.length / widthVertices; 
+		
+		 terrainInfo = getDataInfoFromTerrain(terrain);
+		var bbox = terrainInfo.bbox; // "569900,7032300,570500,7033300";
+		var widthVertices = terrainInfo.xVertices();
+		var heightVertices = terrainInfo.yVertices();
 		 
 		var widthSegments = widthVertices - 1;
 		var heightSegments = heightVertices - 1;
-		 averageX = (569900+570500)/2;
-		 averageY = (7032300+7033300)/2;
+		var averageX = terrainInfo.averageX;
+		var averageY = terrainInfo.averageY;
 
-
-		  scaleX = Math.abs(terrainWidth/(569900-570500));
-		  scaleY = Math.abs(terrainHeight/(7032300-7033300));
-		  scaleZ = Math.abs(1);
-
+		var scale = {
+		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
+			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY)),
+		  	z : 1
+		  };
+		  
 		console.log("Make PlaneGeometry");
 		 terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
 		
@@ -69,8 +72,9 @@ function init() {
 		}
 
 		console.log("Make Material");
-		var material = new THREE.MeshLambertMaterial( {map: getMapTextureWms( bbox, 1000, 1000, useNorgeIBilder ) }); 
-		
+		var material = new THREE.MeshLambertMaterial( {map: getMapTextureWms( bbox, 1000, 1000, useNorgeIBilder ), side : THREE.DoubleSide }); 
+		material.wireframe = false;
+
 		console.log("Make Mesh");
 		var terrainMesh = new THREE.Mesh( terrainGeometry, material);
 		terrainMesh.name = "Terrain";
@@ -88,8 +92,8 @@ function init() {
 		if (objtype === "obj") {
 			// Add hovedbygget from a .obj-file. Based on some hard coding
 			var objLoader = new THREE.OBJMTLLoader();
-			objLoader.load ( "../assets/3D-models/hovedbygget.obj", 
-								"../assets/3D-models/hovedbygget.mtl",
+			objLoader.load ( "../assets/3D-models/obj/hovedbygget.obj", 
+								"../assets/3D-models/obj/hovedbygget.mtl",
 								function ( result ) {
 									obj = result;
 									result.scale.x *= scaleX;
@@ -100,7 +104,7 @@ function init() {
 									result.position.y = (building1.Y - averageY)*scaleY;
 
 
-									result.position.z = 1*getZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
+									result.position.z = 1*getVirtualZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
 
 									
 									result.lookAt(new THREE.Vector3( result.position.x, result.position.y, 0 ));
@@ -120,35 +124,7 @@ function init() {
 		}
 		else {
 		// Add hovedbygget from a .dae-file. Based on some hard coding
-		var loader = new THREE.ColladaLoader();
-		// global from import3dBuildings.js: building1
-		loader.load (building1.path, function (result) {
-			console.log("3d model path: " + building1.path);
-
-			result.scene.scale.x *= scaleX;
-			result.scene.scale.y *= scaleY;
-
-			result.scene.position.x = (building1.X - averageX)*scaleX;
-			result.scene.position.y = (building1.Y - averageY)*scaleY;
-
-			// 10 + : hardcoded correction for this specific case
-			result.scene.position.z = 10 + getZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
-
-			//result.scene.rotation.z = building1.heading;
-
-			scene.add(result.scene);
-
-			globCol = result;
-
-			// debugging
-			if (debug) {
-				boundingBoxHovedbygg = new THREE.BoundingBoxHelper( globCol.scene, 0xffff00 );
-				scene.add(boundingBoxHovedbygg);
-			}
-
-			render();
-
-		});
+			addBuildingsToScene(terrainInfo, scale, scene, render);
 		
 		}
 
@@ -187,6 +163,82 @@ function init() {
 	
 }
 
+/*
+	Iterates through the terrain array of format: array[i] = "x y z"
+	object containing min values, max values, bbox etc. is returned.
+*/
+function getDataInfoFromTerrain(terrainArray) {
+
+	var i, point, minX, minY, minZ, maxX, maxY, maxZ;
+	var resolution; // assumes homogeniously and equal resolution in X and Y. e.g 10 means 10x10 (m)
+	var numberOfPoints = terrainArray.length;
+
+	// start values for min, max and resolution
+	var firstPoint = terrainArray[0].split(" ");
+	minX = maxX = firstPoint[0];
+	minY = maxY = firstPoint[1];
+	minZ = maxZ = firstPoint[2];
+	resolution = 10000000; // random huge number
+
+	for (i = 0; i < numberOfPoints; i++) {
+		point = terrainArray[i].split(" ");
+
+		// X - East
+		minX = Math.min( minX, point[0] );
+		maxX = Math.max( maxX, point[0] );
+
+		// Y - North 
+		minY = Math.min( minY, point[1] );
+		maxY = Math.max( maxY, point[1] );
+
+		// Z - Height
+		minZ = Math.min( minZ, point[2] );
+		maxZ = Math.max( maxZ, point[2] );
+
+		// Resolution
+		if (firstPoint[0] !== point[0]) {
+			resolution = Math.min(resolution, Math.abs(firstPoint[0]-point[0]));
+		}
+	}
+   
+	var dataInfo = {
+		"minX" : minX,
+		"maxX" : maxX,
+		"minY" : minY,
+		"maxY" : maxY,
+		"minZ" : minZ,
+		"maxZ" : maxZ,
+		"resolution" : resolution,
+
+		"bbox" : minX + "," + minY + "," + maxX + "," + maxY,
+
+		"length" : numberOfPoints,	
+
+		"averageX" : function() {
+			return (this.minX+this.maxX)/2;
+		},
+
+		"averageY" : function() {
+			return (this.minY+this.maxY)/2;
+		},
+
+		"xyVerticesRatio" : function() {
+			return (this.maxX-this.minX+1*this.resolution)/(this.maxY-this.minY+1*this.resolution);
+		}, 
+		"xVertices" : function() {
+			return Math.sqrt(this.length * this.xyVerticesRatio());
+		}, 
+		"yVertices" : function() {
+			return this.length / this.xVertices();
+		}
+	}
+
+
+
+
+	return dataInfo;
+
+}
 
 var render = function ()  {
 	requestAnimationFrame( render );
@@ -198,33 +250,39 @@ var render = function ()  {
 		boundingBoxTerrain.update();
 		boundingBoxHovedbygg.update();
 	}
+	bbox123.update()
 
 	return;
 };
 
-function getZValue(x, y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices) {
+function getVirtualZValue(buildingX, buildingY, scale, terrainInfo) {
 
-	// litt hardkoding :(
-	localX = (building1.X - averageX)*scaleX;
-	localY = (building1.Y - averageY)*scaleY;
+	console.log("buildingX: " + buildingX);
+	console.log("buildingY: " + buildingY);
 
-	verticesX = 60;
-	verticesY = 100;
+	var localX = (buildingX - terrainInfo.minX)*scale.x;
+	var localY = (buildingY - terrainInfo.minY)*scale.y;
 
-	xNumber = (localX + 100)/ verticesX;
-	yNumber = (localY + 100)/ verticesY;
+	var verticesX = terrainInfo.xVertices();
+	var verticesY = terrainInfo.yVertices();
+
+	var xNumber = (localX) / verticesX;
+	var yNumber = (localY) / verticesY;
 
 	console.log("xNumber: " + xNumber);
 	console.log("yNumber: " + yNumber);
 
-	//Simplifying. :(
-	xNumber = Math.round(xNumber);
-	yNumber = Math.round(yNumber);
+	//Simplifying. :( Should do som interpolation
+	var xNumber = Math.round(xNumber);
+	var yNumber = Math.round(yNumber);
 
-	terrainIndex = yNumber*verticesY + xNumber;
+	var terrainIndex = yNumber*verticesY + xNumber;
 	console.log("terrainIndex: " + terrainIndex);
-	z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
+	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
 	console.log("Z-value: " + z);
+
+
+
 	return z;
 
 
