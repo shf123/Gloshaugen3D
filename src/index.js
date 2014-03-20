@@ -290,9 +290,9 @@ function getVirtualZValue(buildingX, buildingY, scale, terrainInfo) {
 
 function getMapTextureWms(bbox, width, height, useNorgeIBilder) {
 	
-	// temp 
-	if ( window.location.origin === "http://localhost:8000") {
-		return  THREE.ImageUtils.loadTexture("../assets/texture.png");
+
+	if ( getParameterFromUrl("useStoredTexture") === "true") {
+		return THREE.ImageUtils.loadTexture("../assets/texture.png"); //  made from a print screen -> less accurate 
 	}
 
 	var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
