@@ -21,8 +21,43 @@ var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem )
 	return utm;
 
 }
-var globalDebugArray = []; // for debugging
 
+var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale, objecttype) {
+	console.log("georeferencing...");
+
+	if ( objecttype === "dae") {
+		object.scale.x *= scale.x;
+		object.scale.y *= scale.y;
+		object.scale.z *= 0.5;
+	}
+	// obj or js/native threejs 
+	else {
+
+		object.scale.x *= scale.x;
+		object.scale.z *= scale.y;	
+		object.scale.y *= 0.5; // calculated guess
+
+		// this rotation works
+		object.rotation.x = -Math.PI / 2; // point up
+		object.rotation.y = Math.PI // rotate 180 degrees in the real Z-axis.
+		object.rotation.z = Math.PI;
+
+	}
+	
+
+	// x and y is possible not exactly right since it does not fit the map texture exactly
+	object.position.x = (buildingInfo.X - terrainInfo.averageX())*scale.x;
+	object.position.y = (buildingInfo.Y - terrainInfo.averageY())*scale.y;
+
+	object.position.z = getVirtualZValue(buildingInfo.X, buildingInfo.Y, scale, terrainInfo);
+
+	// need to know the height of the 3D-model since position.z is the senterpoint of the 3D-model that is given her
+	// how is it done? This is hardcoded so far and it is still not exacly correct. Maybe all vertices in object need to be traversed to find diff between max and min height value
+	object.position.z += buildingInfo.hardCodedHeightValue/2;
+
+}
+
+var globalDebugArray = []; // for debugging
 var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
 	
 	var helper = function( i ) {
@@ -32,31 +67,22 @@ var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
 
 		loader.load (aBuilding.path, function (result) {
 
-
 			console.log("3d model path: " + aBuilding.path);
 
-			result.scene.scale.x *= scale.x;
-			result.scene.scale.y *= scale.y;
-
-			result.scene.position.x = (aBuilding.X - terrainInfo.averageX())*scale.x;
-			result.scene.position.y = (aBuilding.Y - terrainInfo.averageY())*scale.y;
-
-			result.scene.position.z = getVirtualZValue(aBuilding.X, aBuilding.Y, scale, terrainInfo);
-
-			
+			georeferenceBuilding( result.scene, aBuilding, terrainInfo, scale, "dae");
 
 			scene.add(result.scene);
 
-			globalDebugArray.push(result);
-
+		
 			// debugging
+			globalDebugArray.push(result);
 			if ( debug ) {
 				boundingBoxHovedbygg = new THREE.BoundingBoxHelper( result.scene, 0xffff00 );
 				scene.add(boundingBoxHovedbygg);
 				console.log("bbox: " + boundingBoxHovedbygg.box.min + " " + boundingBoxHovedbygg.box.max);
 			}
 
-			callback();
+			
 
 		});
 	}
@@ -67,6 +93,8 @@ var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
 		helper(i);
 
 	}
+
+	callback();
 	
 
 }
@@ -78,40 +106,12 @@ var obj; // global for debuging
 	objLoader.load ( "../assets/3D-models/obj/hovedbygget.obj", 
 			"../assets/3D-models/obj/hovedbygget.mtl",
 			function ( result ) {
-				obj = result;
-				result.scale.x *= scale.x;
-				result.scale.z *= scale.y;
-				result.scale.y = 0.5; // calculated guess
-
-				result.position.x = (building1.X - terrainInfo.averageX())*scale.x;
-				result.position.y = (building1.Y - terrainInfo.averageY())*scale.y;
-
-
-				result.position.z = 1*getVirtualZValue(building1.X, building1.Y, scale, terrainInfo);
-
-				// need to know the height of the 3D-model since position.z is the senterpoint of the 3D-model that is given her
-				// how is it done? This is hardcoded so far and it is still not exacly correct
-				result.position.z += building1.hardCodedHeightValue/2;
-			
 				
-				// rotation of the building is not becoming right :(
-				//result.lookAt(new THREE.Vector3( result.position.x, result.position.y, 0 )); // did not work as expected
-
-				// this rotation works
-				result.rotation.x = -Math.PI / 2; // point up
-				result.rotation.y = Math.PI // rotate 180 degrees in the real Z-axis.
-				result.rotation.z = Math.PI;
-
-
+				georeferenceBuilding( result, building1, terrainInfo, scale, "obj");
+				
 				scene.add(result);
 
-				// debugging
-				/*if (debug) {
-					boundingBoxHovedbygg = new THREE.BoundingBoxHelper( result, 0xffff00 );
-					scene.add(boundingBoxHovedbygg);
-				}*/
-
-				callback();
+				callback(); // render()
 
 	});
 
@@ -120,7 +120,6 @@ var obj; // global for debuging
 
 
 // just Hovedbygget at this moment
-var globJSON;
 var addJsonBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
 	console.log("addJsonBuildingsToScene...");
 
@@ -130,37 +129,11 @@ var addJsonBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
 	jsonLoader.load( url,  function( geometry, materials ) {
 
 		var material = new THREE.MeshFaceMaterial( materials );
-
 		var mesh = new THREE.Mesh(geometry, material)
-		globJSON = mesh;
-
-		mesh.scale.x *= scale.x;
-		mesh.scale.z *= scale.y;
-		mesh.scale.y = 0.5; // calculated guess
-
-		mesh.position.x = (building1.X - terrainInfo.averageX())*scale.x;
-		mesh.position.y = (building1.Y - terrainInfo.averageY())*scale.y;
-
-
-		mesh.position.z = 1*getVirtualZValue(building1.X, building1.Y, scale, terrainInfo);
-
-		// need to know the height of the 3D-model since position.z is the senterpoint of the 3D-model that is given her
-		// how is it done? This is hardcoded so far and it is still not exacly correct
-		mesh.position.z += building1.hardCodedHeightValue/2;
 		
-	
-		mesh.rotation.x = -Math.PI / 2; // point up
-		mesh.rotation.y = Math.PI // rotate 180 degrees in the real Z-axis.
-		mesh.rotation.z = Math.PI;
-
-		
+		georeferenceBuilding( mesh, building1, terrainInfo, scale, "json");	
 
 		scene.add(mesh);
-
-
-
-
-		console.log("json building added");
 
 		callback();
 
@@ -171,7 +144,7 @@ var addJsonBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
 
 var buildings = [];
 
-// Do later: Automate the reading of the hardcoded values
+// Do later: Automate the reading of the hardcoded values. 
 // Hovedbygget
 var building1 =  {
 	srs : "UTM32",
