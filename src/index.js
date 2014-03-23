@@ -1,5 +1,5 @@
 // use strict version of js
-//"use strict";
+"use strict";
     
 var scene, camera, renderer, controls;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
@@ -43,9 +43,8 @@ function init() {
 		var terrainWidth = 200; 
 		var terrainHeight = 200; 
 		 
-		 // hardcoded ratio based on clipping parameters in gdal :(. TODO: Those can also be calculated by going through the terrain array
 		
-		 terrainInfo = getDataInfoFromTerrain(terrain);
+		var terrainInfo = getDataInfoFromTerrain(terrain);
 		var bbox = terrainInfo.bbox; // "569900,7032300,570500,7033300";
 		var widthVertices = terrainInfo.xVertices();
 		var heightVertices = terrainInfo.yVertices();
@@ -62,7 +61,7 @@ function init() {
 		  };
 		  
 		console.log("Make PlaneGeometry");
-		 terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
+		terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
 		
 		
 
@@ -80,6 +79,7 @@ function init() {
 		terrainMesh.name = "Terrain";
 
 		// add the height values 
+		console.log("Adding terrain z-values")
 		for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
 							
 			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2];			
@@ -88,72 +88,51 @@ function init() {
 			
 		scene.add( terrainMesh );
 		
+		console.log("Adding buildings");
 		var objtype = getParameterFromUrl("model") || "collada";
-		if (objtype === "obj") {
-			// Add hovedbygget from a .obj-file. Based on some hard coding
-			var objLoader = new THREE.OBJMTLLoader();
-			objLoader.load ( "../assets/3D-models/obj/hovedbygget.obj", 
-								"../assets/3D-models/obj/hovedbygget.mtl",
-								function ( result ) {
-									obj = result;
-									result.scale.x *= scaleX;
-									result.scale.z *= scaleY;
-									result.scale.y = 0.5;
+		switch(objtype) {
 
-									result.position.x = (building1.X - averageX)*scaleX;
-									result.position.y = (building1.Y - averageY)*scaleY;
+			case "obj":
+			// just Hovedbygget at this moment
+				addObjBuildingsToScene( terrainInfo, scale, scene, render );
+				break;
+			case "json":
+			// just Hovedbygget at this moment
+				addJsonBuildingsToScene( terrainInfo, scale, scene, render );
+				break;
+			default:
+				addDaeBuildingsToScene( terrainInfo, scale, scene, render );
+				break;
 
-
-									result.position.z = 1*getVirtualZValue(building1.X, building1.Y, scaleX, scaleY, averageX, averageY, widthVertices, heightVertices);
-
-									
-									result.lookAt(new THREE.Vector3( result.position.x, result.position.y, 0 ));
-
-									scene.add(result);
-
-									// debugging
-									if (debug) {
-										boundingBoxHovedbygg = new THREE.BoundingBoxHelper( result, 0xffff00 );
-										scene.add(boundingBoxHovedbygg);
-									}
-
-									render();
-
-			});
-			
 		}
-		else {
-		// Add hovedbygget from a .dae-file. Based on some hard coding
-			addBuildingsToScene(terrainInfo, scale, scene, render);
-		
-		}
+		console.log("Buildings added");
 
 		// light
-			var light = new THREE.AmbientLight( 0xababab ) ;
-			light.position = camera.position;
-			scene.add( light );
+		var light = new THREE.AmbientLight( 0xababab ) ;
+		light.position = camera.position;
+		scene.add( light );
 
-			var light2 = new THREE.DirectionalLight( 0x444444 );
-			light2.position = camera.position;
-			scene.add( light2 );
-			
+		var light2 = new THREE.DirectionalLight( 0x444444 );
+		light2.position = camera.position;
+		scene.add( light2 );
+		
 
-			// Debug geometries
-			// create axis helper (for debugging)
-			if (debug) {
-			var axisHelper = new THREE.AxisHelper( 500 );
-			scene.add( axisHelper );
-			
-			boundingBoxTerrain = new THREE.BoundingBoxHelper( terrainMesh, 0xffff00 );
-			scene.add(boundingBoxTerrain);
-			
-			gridHelper = new THREE.GridHelper( 150,10 );
-			gridHelper.setColors( 0x888822, 0x888888 );
-			gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
-			scene.add(gridHelper);
+		// Debug geometries
+		// create axis helper (for debugging)
+		if (debug) {
+		var axisHelper = new THREE.AxisHelper( 500 );
+		scene.add( axisHelper );
+		
+		boundingBoxTerrain = new THREE.BoundingBoxHelper( terrainMesh, 0xffff00 );
+		scene.add(boundingBoxTerrain);
+		
+		gridHelper = new THREE.GridHelper( 150,10 );
+		gridHelper.setColors( 0x888822, 0x888888 );
+		gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
+		scene.add(gridHelper);
 
-			}
-			
+		}
+		
 
 			
 
@@ -247,10 +226,9 @@ var render = function ()  {
 	renderer.render( scene, camera );
 
 	if (debug) {
-		boundingBoxTerrain.update();
-		boundingBoxHovedbygg.update();
+		//boundingBoxTerrain.update();
+		//boundingBoxHovedbygg.update();
 	}
-	bbox123.update()
 
 	return;
 };
