@@ -1,8 +1,9 @@
 // use strict version of js
 "use strict";
     
-var scene, camera, renderer, controls;
+var scene, camera, renderer, controls, stats;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
+
 var debugVariable;
 var terrainGeometry;
 
@@ -30,7 +31,12 @@ function init() {
 	renderer.setSize( width, height );
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
 	
-	
+	// initilize stats
+	stats = new Stats();
+	stats.domElement.style.position = 'absolute';
+	stats.domElement.style.top = '0px';
+	stats.domElement.style.right = '0px';
+	document.body.appendChild( stats.domElement );
 	
 
 	// terrain
@@ -220,6 +226,9 @@ function getDataInfoFromTerrain(terrainArray) {
 }
 
 var render = function ()  {
+
+	stats.begin();
+
 	requestAnimationFrame( render );
 
 	controls.update();
@@ -229,6 +238,8 @@ var render = function ()  {
 		//boundingBoxTerrain.update();
 		//boundingBoxHovedbygg.update();
 	}
+
+	stats.end();
 
 	return;
 };
