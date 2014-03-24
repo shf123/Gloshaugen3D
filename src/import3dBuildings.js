@@ -1,49 +1,5 @@
 "use strict";
 
-console.log("import3dBuildings");
-
-
-
-function getVirtualZValue(buildingX, buildingY, scale, terrainInfo) {
-
-	//console.log("buildingX: " + buildingX);
-	//console.log("buildingY: " + buildingY);
-
-	var localX = (buildingX - terrainInfo.minX)*scale.x;
-	var localY = (buildingY - terrainInfo.minY)*scale.y;
-
-	var verticesX = terrainInfo.xVertices();
-	var verticesY = terrainInfo.yVertices();
-
-	// need to document why this formulas is like this
-	var terrainWidth = scale.x * (terrainInfo.maxX-terrainInfo.minX); 
-	var terrainHeight = scale.y * (terrainInfo.maxY-terrainInfo.minY); 
-
-
-	var xNumber = (localX) * verticesX / terrainWidth;
-	var yNumber = (verticesY-1) - ((localY) * verticesY / terrainHeight); // Northvalues increases upwards, y-values increases downwords
-
-	//console.log("xNumber: " + xNumber);
-	//console.log("yNumber: " + yNumber);
-
-	//Simplifying. :( Should do som interpolation
-	var xNumber = Math.round(xNumber);
-	var yNumber = Math.round(yNumber);
-
-	// should by verticesX instead of verticesY
-	var terrainIndex = yNumber*verticesX + xNumber;
-	//console.log("terrainIndex: " + terrainIndex);
-	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
-	//console.log("Z-value: " + z);
-
-
-
-	return z;
-
-
-}
-
-
 var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem ) {
 
 	var hjs = Holsen();
@@ -64,37 +20,33 @@ var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem )
 
 }
 
-var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale, objecttype) {
-	//console.log("georeferencing...");
+var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
-	if ( objecttype === "dae") {
-		object.scale.x *= scale.x;
-		object.scale.y *= scale.y;
-		object.scale.z *= 0.5; // calculated guess
+	console.log("Adding buildings");
+	var objtype = getParameterFromUrl("model") || "collada";
+	switch(objtype) {
+
+		case "obj":
+		// just Hovedbygget at this moment
+			addObjBuildingsToScene( terrainInfo, scale, scene, whenFinished );
+			break;
+		case "json":
+		// just Hovedbygget at this moment
+			addJsonBuildingsToScene( terrainInfo, scale, scene, whenFinished );
+			break;
+		case "debug":
+			addDebugGeometriesToScene( terrainInfo, scale, scene, whenFinished );
+			break;
+		default:
+			addDaeBuildingsToScene( terrainInfo, scale, scene, whenFinished );
+			break;
+
 	}
-	// obj or js/native threejs 
-	else {
-
-		object.scale.x *= scale.x;
-		object.scale.z *= scale.y;	
-		object.scale.y *= 0.5; // calculated guess
-
-		// this rotation works
-		object.rotation.x = -Math.PI / 2; // point up
-		object.rotation.y = Math.PI // rotate 180 degrees in the real Z-axis.
-		object.rotation.z = Math.PI;
-
-	}
+	console.log("Buildings added");
 	
 
-	// x and y is possible not exactly right since it does not fit the map texture exactly
-	object.position.x = (buildingInfo.X - terrainInfo.averageX())*scale.x;
-	object.position.y = (buildingInfo.Y - terrainInfo.averageY())*scale.y;
-
-	object.position.z = getVirtualZValue(buildingInfo.X, buildingInfo.Y, scale, terrainInfo);
-
-
 }
+
 
 var globalDebugArray = []; // for debugging
 var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
@@ -223,6 +175,81 @@ var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback )
 	callback();		
 
 }
+
+
+var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale, objecttype) {
+	//console.log("georeferencing...");
+
+	if ( objecttype === "dae") {
+		object.scale.x *= scale.x;
+		object.scale.y *= scale.y;
+		object.scale.z *= 0.5; // calculated guess
+	}
+	// obj or js/native threejs 
+	else {
+
+		object.scale.x *= scale.x;
+		object.scale.z *= scale.y;	
+		object.scale.y *= 0.5; // calculated guess
+
+		// this rotation works
+		object.rotation.x = -Math.PI / 2; // point up
+		object.rotation.y = Math.PI // rotate 180 degrees in the real Z-axis.
+		object.rotation.z = Math.PI;
+
+	}
+	
+
+	// x and y is possible not exactly right since it does not fit the map texture exactly
+	object.position.x = (buildingInfo.X - terrainInfo.averageX())*scale.x;
+	object.position.y = (buildingInfo.Y - terrainInfo.averageY())*scale.y;
+
+	object.position.z = getVirtualZValue(buildingInfo.X, buildingInfo.Y, scale, terrainInfo);
+
+
+}
+
+var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
+
+	//console.log("buildingX: " + buildingX);
+	//console.log("buildingY: " + buildingY);
+
+	var localX = (buildingX - terrainInfo.minX)*scale.x;
+	var localY = (buildingY - terrainInfo.minY)*scale.y;
+
+	var verticesX = terrainInfo.xVertices();
+	var verticesY = terrainInfo.yVertices();
+
+	// need to document why this formulas is like this
+	var terrainWidth = scale.x * (terrainInfo.maxX-terrainInfo.minX); 
+	var terrainHeight = scale.y * (terrainInfo.maxY-terrainInfo.minY); 
+
+
+	var xNumber = (localX) * verticesX / terrainWidth;
+	var yNumber = (verticesY-1) - ((localY) * verticesY / terrainHeight); // Northvalues increases upwards, y-values increases downwords
+
+	//console.log("xNumber: " + xNumber);
+	//console.log("yNumber: " + yNumber);
+
+	//Simplifying. :( Should do som interpolation
+	var xNumber = Math.round(xNumber);
+	var yNumber = Math.round(yNumber);
+
+	// should by verticesX instead of verticesY
+	var terrainIndex = yNumber*verticesX + xNumber;
+	//console.log("terrainIndex: " + terrainIndex);
+	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
+	//console.log("Z-value: " + z);
+
+
+
+	return z;
+
+
+}
+
+
+console.log("import3dBuildings");
 
 var buildings = [];
 
