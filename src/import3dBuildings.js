@@ -2,6 +2,48 @@
 
 console.log("import3dBuildings");
 
+
+
+function getVirtualZValue(buildingX, buildingY, scale, terrainInfo) {
+
+	//console.log("buildingX: " + buildingX);
+	//console.log("buildingY: " + buildingY);
+
+	var localX = (buildingX - terrainInfo.minX)*scale.x;
+	var localY = (buildingY - terrainInfo.minY)*scale.y;
+
+	var verticesX = terrainInfo.xVertices();
+	var verticesY = terrainInfo.yVertices();
+
+	// need to document why this formulas is like this
+	var terrainWidth = scale.x * (terrainInfo.maxX-terrainInfo.minX); 
+	var terrainHeight = scale.y * (terrainInfo.maxY-terrainInfo.minY); 
+
+
+	var xNumber = (localX) * verticesX / terrainWidth;
+	var yNumber = (verticesY-1) - ((localY) * verticesY / terrainHeight); // Northvalues increases upwards, y-values increases downwords
+
+	//console.log("xNumber: " + xNumber);
+	//console.log("yNumber: " + yNumber);
+
+	//Simplifying. :( Should do som interpolation
+	var xNumber = Math.round(xNumber);
+	var yNumber = Math.round(yNumber);
+
+	// should by verticesX instead of verticesY
+	var terrainIndex = yNumber*verticesX + xNumber;
+	//console.log("terrainIndex: " + terrainIndex);
+	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
+	//console.log("Z-value: " + z);
+
+
+
+	return z;
+
+
+}
+
+
 var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem ) {
 
 	var hjs = Holsen();
@@ -23,12 +65,12 @@ var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem )
 }
 
 var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale, objecttype) {
-	console.log("georeferencing...");
+	//console.log("georeferencing...");
 
 	if ( objecttype === "dae") {
 		object.scale.x *= scale.x;
 		object.scale.y *= scale.y;
-		object.scale.z *= 0.5;
+		object.scale.z *= 0.5; // calculated guess
 	}
 	// obj or js/native threejs 
 	else {
@@ -51,9 +93,6 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 
 	object.position.z = getVirtualZValue(buildingInfo.X, buildingInfo.Y, scale, terrainInfo);
 
-	// need to know the height of the 3D-model since position.z is the senterpoint of the 3D-model that is given her
-	// how is it done? This is hardcoded so far and it is still not exacly correct. Maybe all vertices in object need to be traversed to find diff between max and min height value
-	object.position.z += buildingInfo.hardCodedHeightValue/2;
 
 }
 
@@ -71,9 +110,11 @@ var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
 
 			georeferenceBuilding( result.scene, aBuilding, terrainInfo, scale, "dae");
 
+
+
 			scene.add(result.scene);
 
-		
+			
 			// debugging
 			globalDebugArray.push(result);
 			if ( debug ) {
@@ -135,12 +176,53 @@ var addJsonBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
 
 		scene.add(mesh);
 
+		
+		
 		callback();
 
 	});
 
 }
 
+// testing georeferenceBuilding()
+var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback ) {
+	console.log("addDebugGeometriesToScene");
+
+	var x, y, xMin, yMin, xMax, yMax;
+	xMin = 569905;
+	yMin = 7032305;
+	xMax = 570495;
+	yMax = 7033295;
+
+
+
+	var log = "";
+	for (x = xMin; x < xMax; x += 10*2) {
+		for (y = yMin; y < yMax; y += 10*2) {
+		
+			
+			var boxG = new THREE.BoxGeometry( 10,10,1 );
+			var boxM = new THREE.MeshBasicMaterial( );
+			var boxMesh = new THREE.Mesh( boxG, boxM );
+			
+			var buildingInfo =  {
+				X : x,
+				Y : y	
+			}
+
+			georeferenceBuilding ( boxMesh , buildingInfo, terraininfo, scale, "dae");
+
+			log += "x,y,z: " + boxMesh.position.x + ", " +  boxMesh.position.y  + ", " +  boxMesh.position.z  + "\n";
+
+			scene.add(boxMesh);
+		
+		}
+		console.log(log);
+	}
+	console.log("Callback");
+	callback();		
+
+}
 
 var buildings = [];
 
@@ -150,9 +232,7 @@ var building1 =  {
 	srs : "UTM32",
 	lat : 63.419298, // hardcoded from a kml-file 
 	lon : 10.402173, // hardcoded from a kml-file 
-	heading : 1.254111853776, //  hardcoded from a kml-file. is it needed?
 	path : "./../assets/3D-models/collada/Models with resized images/Grp 7 Hovedbygg Gloshaugen.dae",
-	hardCodedHeightValue : 22 // :(
 }
 
 // VM-brakke
@@ -160,30 +240,25 @@ var building2 =  {
 	srs : "UTM32",
 	lat : 63.41729721313, // hardcoded from a kml-file 
 	lon : 10.40790886266, // hardcoded from a kml-file 
-	heading : 1.259220470449, //  hardcoded from a kml-file. is it needed?
 	path : "./../assets/3D-models/collada/VM-brakke.dae",
-	hardCodedHeightValue : 5
 }
 
-// Elektro. Textures need to be resized to 2^x to fix texture issue. Will do that later. 
+// Elektro. Textures need to be resized to 2^x to fix texture issue. Will do that later. Also need to import bigger area of terrain 
+// On this builing it is also very obvious that not accounting for unhomogen terrain below an building is not good enougth.
 var building3 =  {
 	srs : "UTM32",
 	lat : 63.41797145098, // hardcoded from a kml-file 
 	lon : 10.40039257524, // hardcoded from a kml-file 
-	heading : 1.252504804224, //  hardcoded from a kml-file. is it needed?
 	path : "./../assets/3D-models/collada/elektro.dae",
-	hardCodedHeightValue : 5
 }
 
 
 // Berg. Textures need to be resized to fix texture issue. Will do that later
 var building4 =  {
-	srs : "UTM32",
+	srs : "UTM32", 
 	lat : 63.41732442736, // hardcoded from a kml-file 
 	lon : 10.40664009821, // hardcoded from a kml-file 
-	heading : 1.252504804224, //  hardcoded from a kml-file. is it needed?
 	path : "./../assets/3D-models/collada/berg2.dae",
-	hardCodedHeightValue : 10
 }
 
 
@@ -204,4 +279,3 @@ for (i = 0; i < buildings.length; i++) {
 
 
 }
-

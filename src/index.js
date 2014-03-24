@@ -46,8 +46,7 @@ function init() {
 		terrain.pop(); // since the last line in the file "gloshaugen.xyz" is empty
 						
 		
-		var terrainWidth = 200; 
-		var terrainHeight = 200; 
+		
 		 
 		
 		var terrainInfo = getDataInfoFromTerrain(terrain);
@@ -59,6 +58,10 @@ function init() {
 		var heightSegments = heightVertices - 1;
 		var averageX = terrainInfo.averageX;
 		var averageY = terrainInfo.averageY;
+
+		var terrainHeight = 200; 
+		var terrainWidth = terrainHeight * terrainInfo.xyVerticesRatio() ; 
+		
 
 		var scale = {
 		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
@@ -105,6 +108,9 @@ function init() {
 			case "json":
 			// just Hovedbygget at this moment
 				addJsonBuildingsToScene( terrainInfo, scale, scene, render );
+				break;
+			case "debug":
+				addDebugGeometriesToScene( terrainInfo, scale, scene, render );
 				break;
 			default:
 				addDaeBuildingsToScene( terrainInfo, scale, scene, render );
@@ -243,39 +249,6 @@ var render = function ()  {
 
 	return;
 };
-
-function getVirtualZValue(buildingX, buildingY, scale, terrainInfo) {
-
-	console.log("buildingX: " + buildingX);
-	console.log("buildingY: " + buildingY);
-
-	var localX = (buildingX - terrainInfo.minX)*scale.x;
-	var localY = (buildingY - terrainInfo.minY)*scale.y;
-
-	var verticesX = terrainInfo.xVertices();
-	var verticesY = terrainInfo.yVertices();
-
-	var xNumber = (localX) / verticesX;
-	var yNumber = (localY) / verticesY;
-
-	console.log("xNumber: " + xNumber);
-	console.log("yNumber: " + yNumber);
-
-	//Simplifying. :( Should do som interpolation
-	var xNumber = Math.round(xNumber);
-	var yNumber = Math.round(yNumber);
-
-	var terrainIndex = yNumber*verticesY + xNumber;
-	console.log("terrainIndex: " + terrainIndex);
-	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
-	console.log("Z-value: " + z);
-
-
-
-	return z;
-
-
-}
 
 function getMapTextureWms(bbox, width, height, useNorgeIBilder) {
 	
