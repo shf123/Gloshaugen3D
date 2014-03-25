@@ -22,20 +22,25 @@ var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem )
 
 var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
-	console.log("Adding buildings");
+	console.log("Adidng buildings");
 	var objtype = getParameterFromUrl("model") || "collada";
-	
+
+
 	var loader;
 	switch(objtype) {
 
 		case "obj":
-			loader = addObjBuildingsToScene;
+			loader = loadObjBuilding;
 			break;
 		case "js":
-			loader = addJsonBuildingsToScene;
+			loader = loadJsonBuilding;
 			break;
+		case "debug":
+			addDebugGeometriesToScene( terrainInfo, scale, scene, whenFinished); 
+			return;
 		default:
-			loader = addDaeBuildingsToScene;
+			objtype = "dae";
+			loader = loadDaeBuilding;
 			break;
 	}
 
@@ -44,11 +49,15 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 		var i;
 
 		var helper = function (i, url) {
-			
+		
 			var whenFinishedJson = function( geometry, materials) {
 				var material = new THREE.MeshFaceMaterial( materials );
 				var object = new THREE.Mesh(geometry, material );
 				whenFinished ( object );
+			}
+
+			var whenFinishedDae = function ( collada ) {
+				whenFinished( collada.scene );
 			}
 
 			var whenFinished = function ( object ) {
@@ -68,7 +77,7 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 					coords.Y = coords.utm.x 
 					coords.X = coords.utm.y; 		
 					
-					georeferenceBuilding( object, coords, terrainInfo, scale, objtype);
+					georeferenceBuilding( object, coords, terrainInfo, scale, objtype );
 					
 					scene.add( object );
 				
@@ -77,14 +86,15 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 			} 
 
-			
-
-			if ( objtype === "js") {
-				loader( terrainInfo, scale, scene, url, whenFinishedJson );
-			}
-			else {
-				loader( terrainInfo, scale, scene, url, whenFinished );
-				
+			switch(objtype) {
+				case "dae":
+					loader( url, whenFinishedDae );
+					break;
+				case "js":
+					loader( url, whenFinishedJson );
+					break;
+				default:
+					loader( url, whenFinished );
 			}
 
 		}
@@ -101,78 +111,11 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 	var directory = "../assets/3D-models/" + objtype + "/";
 	getFilesInDirectory( directory , objtype , callbackGetFiles);
-
-
-	//console.log("Buildings added");
 	
-
 }
 
 
-var globalDebugArray = []; // for debugging
-var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
-	
-	var helper = function( i ) {
 
-		var loader = new THREE.ColladaLoader();
-		//var aBuilding = buildings[i]; 
-		var daeUrl = daeBuildingUrls[i];
-
-		loader.load (daeUrl, function (result) {
-
-			console.log("3d model path: " + daeUrl);
-
-			
-			//get coordinates from kml file
-			var coords = {};
-			var urlKml = daeUrl.replace(".dae", ".kml"); 
-			var kmlFileLoaded = function( kmlFile ) {
-				var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
-				coords.lat = coords.find("latitude")[0].innerHTML;
-				coords.lon = coords.find("longitude")[0].innerHTML;
-
-				coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
-
-				// x-> y and y -> x as a matter of preference
-				coords.Y = coords.utm.x 
-				coords.X = coords.utm.y; 
-
-				georeferenceBuilding( result.scene, coords, terrainInfo, scale, "dae");
-
-				scene.add(result.scene);
-				
-			} 
-			$.get( urlKml, kmlFileLoaded );
-
-			
-		});
-	}
-
-	var directory = "./../assets/3D-models/collada/";
-	// assumes excistence of kml-file with same name for getting coordinates. Are using kml since they are a part of the availiable kmz-files
-	
-	var daeBuildingUrls;
-	var callbackGetDaeFilesIn = function( daeFilePaths ) {
-		console.log("for loop helper(i)");
-		var i;
-
-		daeBuildingUrls = daeFilePaths;
-
-		for ( i = 0; i < daeBuildingUrls.length; i++ ) {
-			console.log("Building " + i)
-			helper(i);
-
-		}
-	}
-	
-	getFilesInDirectory( directory , ".dae", callbackGetDaeFilesIn);
-
-	
-	
-	callback();
-	
-
-}
 
 var getFilesInDirectory = function ( directory , fileExtension, callback) {
 	console.log("Get dae files");
@@ -203,66 +146,23 @@ var getFilesInDirectory = function ( directory , fileExtension, callback) {
 
 }
 
-var addObjBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
+var loadDaeBuilding = function( url, callback ) {
+	
+	var loader = new THREE.ColladaLoader();
+	loader.load (url, callback );
+}
+
+var loadObjBuilding = function( url, callback)  {
 
 
-	var callbackGetObjFiles = function ( objFilePaths ) {
-		var i;
+	var mtlUrl = url.replace(".obj", ".mtl"); 
+	var objLoader = new THREE.OBJMTLLoader();
+	objLoader.load ( url, mtlUrl, callback );
 
-		var helper = function (i, objUrl) {
-			var mtlUrl = objUrl.replace(".obj", ".mtl");
-			var objLoader = new THREE.OBJMTLLoader();
-			objLoader.load ( objUrl, mtlUrl,
-					function ( result ) {
-
-
-				//get coordinates from kml file
-				var coords = {};
-				var urlKml = objUrl.replace(".obj", ".kml"); 
-				var kmlFileLoaded = function( kmlFile ) {
-					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
-					coords.lat = coords.find("latitude")[0].innerHTML;
-					coords.lon = coords.find("longitude")[0].innerHTML;
-
-					coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
-
-					// x-> y and y -> x as a matter of preference
-					coords.Y = coords.utm.x 
-					coords.X = coords.utm.y; 
-
-					
-					georeferenceBuilding( result, coords, terrainInfo, scale, "obj");
-					
-					scene.add(result);
-				
-				} 
-			$.get( urlKml, kmlFileLoaded );
-
-
-			});
-		}
-		
-
-		for ( i = 0; i < objFilePaths.length; i++ ) {
-
-			helper(i, objFilePaths[i]);
-		}
-
-		callback(); // render()
-		
-	}
-
-	var directory = "../assets/3D-models/obj/";
-	getFilesInDirectory( directory , ".obj", callbackGetObjFiles);
 
 }
 
-
-
-// just Hovedbygget at this moment
-var addJsonBuildingsToScene = function( terrainInfo, scale, scene, url, callback)  {
-	console.log("addJsonBuildingsToScene...");
-
+var loadJsonBuilding = function( url, callback)  {
 
 	var jsonLoader = new THREE.JSONLoader();
 
@@ -271,70 +171,6 @@ var addJsonBuildingsToScene = function( terrainInfo, scale, scene, url, callback
 	console.log("folder: " + textureFolderPath); 
 
 	jsonLoader.load( url, callback, textureFolderPath);
-
-	/*
-	var callbackGetJsonFiles = function ( jsonFilePaths ) {
-		var i;
-
-		var helper = function (i, jsonUrl) {
-
-
-			var jsonLoader = new THREE.JSONLoader();
-
-			// give folder path: 
-			var textureFolderPath = jsonUrl.replace(".js","") + "/";	
-			console.log("folder: " + textureFolderPath); 
-
-			jsonLoader.load( jsonUrl,  function( geometry, materials ) {
-
-				//get coordinates from kml file
-				var coords = {};
-				var urlKml = jsonUrl.replace(".js", ".kml"); 
-				var kmlFileLoaded = function( kmlFile ) {
-					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
-					coords.lat = coords.find("latitude")[0].innerHTML;
-					coords.lon = coords.find("longitude")[0].innerHTML;
-
-					coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
-
-					// x-> y and y -> x as a matter of preference
-					coords.Y = coords.utm.x 
-					coords.X = coords.utm.y; 
-
-
-					var material = new THREE.MeshFaceMaterial( materials );
-					var mesh = new THREE.Mesh(geometry, material)
-
-		
-					georeferenceBuilding( mesh, coords, terrainInfo, scale, "json");
-					
-					scene.add(mesh);
-				
-				} 
-				$.get( urlKml, kmlFileLoaded );
-		
-				
-				callback();
-
-			}, textureFolderPath);
-
-		}
-		
-		console.log("Adding " + jsonFilePaths.length + " buildings");
-
-		for ( i = 0; i < jsonFilePaths.length; i++ ) {
-
-			helper(i, jsonFilePaths[i]);
-		}
-
-		callback(); // render()
-		
-	}
-
-	var directory = "../assets/3D-models/threejsNative/";
-	getFilesInDirectory( directory , ".js", callbackGetJsonFiles);
-	*/
-
 	
 }
 
@@ -355,7 +191,7 @@ var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback )
 		for (y = yMin; y < yMax; y += 10*2) {
 		
 			
-			var boxG = new THREE.BoxGeometry( 10,10,1 );
+			var boxG = new THREE.BoxGeometry( 5,5,1 );
 			var boxM = new THREE.MeshBasicMaterial( );
 			var boxMesh = new THREE.Mesh( boxG, boxM );
 			
@@ -391,7 +227,7 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 	else {
 
 		object.scale.x *= scale.x;
-		object.scale.z *= scale.y;	
+		object.scale.z *= scale.y;	// switch of z and y since default settings in blender exporter did this. should be checked if it is normal for obj and json objects in general
 		object.scale.y *= 0.5; // calculated guess
 
 		// this rotation works
@@ -413,9 +249,6 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 
 var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
 
-	//console.log("buildingX: " + buildingX);
-	//console.log("buildingY: " + buildingY);
-
 	var localX = (buildingX - terrainInfo.minX)*scale.x;
 	var localY = (buildingY - terrainInfo.minY)*scale.y;
 
@@ -430,19 +263,14 @@ var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
 	var xNumber = (localX) * verticesX / terrainWidth;
 	var yNumber = (verticesY-1) - ((localY) * verticesY / terrainHeight); // Northvalues increases upwards, y-values increases downwords
 
-	//console.log("xNumber: " + xNumber);
-	//console.log("yNumber: " + yNumber);
 
 	//Simplifying. :( Should do som interpolation
 	var xNumber = Math.round(xNumber);
 	var yNumber = Math.round(yNumber);
 
-	// should by verticesX instead of verticesY
-	var terrainIndex = yNumber*verticesX + xNumber;
-	//console.log("terrainIndex: " + terrainIndex);
-	var z = terrainGeometry.vertices[terrainIndex].z; // assumes terrainGeometry is global :(
-	//console.log("Z-value: " + z);
 
+	var terrainIndex = yNumber*verticesX + xNumber;
+	var z = terrainGeometry.vertices[terrainIndex].z; // terrainGeometry is global
 
 
 	return z;
@@ -450,4 +278,4 @@ var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
 
 }
 
-console.log("import3dBuildings");
+
