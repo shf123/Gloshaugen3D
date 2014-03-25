@@ -24,25 +24,86 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 	console.log("Adding buildings");
 	var objtype = getParameterFromUrl("model") || "collada";
+	
+	var loader;
 	switch(objtype) {
 
 		case "obj":
-		// just Hovedbygget at this moment
-			addObjBuildingsToScene( terrainInfo, scale, scene, whenFinished );
+			loader = addObjBuildingsToScene;
 			break;
-		case "json":
-		// just Hovedbygget at this moment
-			addJsonBuildingsToScene( terrainInfo, scale, scene, whenFinished );
-			break;
-		case "debug":
-			addDebugGeometriesToScene( terrainInfo, scale, scene, whenFinished );
+		case "js":
+			loader = addJsonBuildingsToScene;
 			break;
 		default:
-			addDaeBuildingsToScene( terrainInfo, scale, scene, whenFinished );
+			loader = addDaeBuildingsToScene;
 			break;
-
 	}
-	console.log("Buildings added");
+
+
+	var callbackGetFiles = function ( filePaths ) {
+		var i;
+
+		var helper = function (i, url) {
+			
+			var whenFinishedJson = function( geometry, materials) {
+				var material = new THREE.MeshFaceMaterial( materials );
+				var object = new THREE.Mesh(geometry, material );
+				whenFinished ( object );
+			}
+
+			var whenFinished = function ( object ) {
+
+				//get coordinates from kml file
+				var coords = {};
+				var urlKml = url.replace("." + objtype, ".kml"); 
+				var kmlFileLoaded = function( kmlFile ) {
+					
+					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
+					coords.lat = coords.find("latitude")[0].innerHTML;
+					coords.lon = coords.find("longitude")[0].innerHTML;
+
+					coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
+
+					// x-> y and y -> x as a matter of preference
+					coords.Y = coords.utm.x 
+					coords.X = coords.utm.y; 		
+					
+					georeferenceBuilding( object, coords, terrainInfo, scale, objtype);
+					
+					scene.add( object );
+				
+				} 
+				$.get( urlKml, kmlFileLoaded );
+
+			} 
+
+			
+
+			if ( objtype === "js") {
+				loader( terrainInfo, scale, scene, url, whenFinishedJson );
+			}
+			else {
+				loader( terrainInfo, scale, scene, url, whenFinished );
+				
+			}
+
+		}
+		
+
+		for ( i = 0; i < filePaths.length; i++ ) {
+
+			helper(i, filePaths[i]);
+		}
+
+		whenFinished(); // render()
+	
+	}
+
+	var directory = "../assets/3D-models/" + objtype + "/";
+	getFilesInDirectory( directory , objtype , callbackGetFiles);
+
+
+	//console.log("Buildings added");
 	
 
 }
@@ -54,86 +115,227 @@ var addDaeBuildingsToScene = function( terrainInfo, scale, scene, callback ) {
 	var helper = function( i ) {
 
 		var loader = new THREE.ColladaLoader();
-		var aBuilding = buildings[i]; 
+		//var aBuilding = buildings[i]; 
+		var daeUrl = daeBuildingUrls[i];
 
-		loader.load (aBuilding.path, function (result) {
+		loader.load (daeUrl, function (result) {
 
-			console.log("3d model path: " + aBuilding.path);
-
-			georeferenceBuilding( result.scene, aBuilding, terrainInfo, scale, "dae");
-
-
-
-			scene.add(result.scene);
+			console.log("3d model path: " + daeUrl);
 
 			
-			// debugging
-			globalDebugArray.push(result);
-			if ( debug ) {
-				boundingBoxHovedbygg = new THREE.BoundingBoxHelper( result.scene, 0xffff00 );
-				scene.add(boundingBoxHovedbygg);
-				console.log("bbox: " + boundingBoxHovedbygg.box.min + " " + boundingBoxHovedbygg.box.max);
-			}
+			//get coordinates from kml file
+			var coords = {};
+			var urlKml = daeUrl.replace(".dae", ".kml"); 
+			var kmlFileLoaded = function( kmlFile ) {
+				var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
+				coords.lat = coords.find("latitude")[0].innerHTML;
+				coords.lon = coords.find("longitude")[0].innerHTML;
+
+				coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
+
+				// x-> y and y -> x as a matter of preference
+				coords.Y = coords.utm.x 
+				coords.X = coords.utm.y; 
+
+				georeferenceBuilding( result.scene, coords, terrainInfo, scale, "dae");
+
+				scene.add(result.scene);
+				
+			} 
+			$.get( urlKml, kmlFileLoaded );
 
 			
-
 		});
 	}
 
-	var i;
-	for ( i = 0; i < buildings.length; i++ ) {
-		console.log("Building " + i)
-		helper(i);
+	var directory = "./../assets/3D-models/collada/";
+	// assumes excistence of kml-file with same name for getting coordinates. Are using kml since they are a part of the availiable kmz-files
+	
+	var daeBuildingUrls;
+	var callbackGetDaeFilesIn = function( daeFilePaths ) {
+		console.log("for loop helper(i)");
+		var i;
 
+		daeBuildingUrls = daeFilePaths;
+
+		for ( i = 0; i < daeBuildingUrls.length; i++ ) {
+			console.log("Building " + i)
+			helper(i);
+
+		}
 	}
+	
+	getFilesInDirectory( directory , ".dae", callbackGetDaeFilesIn);
 
+	
+	
 	callback();
 	
 
 }
 
+var getFilesInDirectory = function ( directory , fileExtension, callback) {
+	console.log("Get dae files");
+
+	var directoryLoaded = function( data ) {
+		var i;	
+
+		var daeFilesHtml = $(data).find("a:contains(" + "." + fileExtension + ")");
+
+		var urls = [];	
+
+		for ( i = 0; i < daeFilesHtml.length; i++) {
+
+			var urlDae = directory + daeFilesHtml[i].innerHTML;
+			urls.push(urlDae);
+
+			console.log("Got ." + fileExtension + " path: " + urlDae );
+			
+
+
+		}
+		callback( urls );
+
+	}
+
+	$.get( directory, directoryLoaded);
+
+
+}
+
 var addObjBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
-var obj; // global for debuging
-// Add hovedbygget from a .obj-file. Based on some hard coding and only adds hovedbygget. The rotation is not right at all.
-	var objLoader = new THREE.OBJMTLLoader();
-	objLoader.load ( "../assets/3D-models/obj/hovedbygget.obj", 
-			"../assets/3D-models/obj/hovedbygget.mtl",
-			function ( result ) {
-				
-				georeferenceBuilding( result, building1, terrainInfo, scale, "obj");
-				
-				scene.add(result);
 
-				callback(); // render()
 
-	});
+	var callbackGetObjFiles = function ( objFilePaths ) {
+		var i;
+
+		var helper = function (i, objUrl) {
+			var mtlUrl = objUrl.replace(".obj", ".mtl");
+			var objLoader = new THREE.OBJMTLLoader();
+			objLoader.load ( objUrl, mtlUrl,
+					function ( result ) {
+
+
+				//get coordinates from kml file
+				var coords = {};
+				var urlKml = objUrl.replace(".obj", ".kml"); 
+				var kmlFileLoaded = function( kmlFile ) {
+					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
+					coords.lat = coords.find("latitude")[0].innerHTML;
+					coords.lon = coords.find("longitude")[0].innerHTML;
+
+					coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
+
+					// x-> y and y -> x as a matter of preference
+					coords.Y = coords.utm.x 
+					coords.X = coords.utm.y; 
+
+					
+					georeferenceBuilding( result, coords, terrainInfo, scale, "obj");
+					
+					scene.add(result);
+				
+				} 
+			$.get( urlKml, kmlFileLoaded );
+
+
+			});
+		}
+		
+
+		for ( i = 0; i < objFilePaths.length; i++ ) {
+
+			helper(i, objFilePaths[i]);
+		}
+
+		callback(); // render()
+		
+	}
+
+	var directory = "../assets/3D-models/obj/";
+	getFilesInDirectory( directory , ".obj", callbackGetObjFiles);
 
 }
 
 
 
 // just Hovedbygget at this moment
-var addJsonBuildingsToScene = function( terrainInfo, scale, scene, callback)  {
+var addJsonBuildingsToScene = function( terrainInfo, scale, scene, url, callback)  {
 	console.log("addJsonBuildingsToScene...");
 
 
 	var jsonLoader = new THREE.JSONLoader();
-	var url = "../assets/3D-models/threejsNative/hovedbygget/hovedbygget.js"
-	jsonLoader.load( url,  function( geometry, materials ) {
 
-		var material = new THREE.MeshFaceMaterial( materials );
-		var mesh = new THREE.Mesh(geometry, material)
+	// give folder path: 
+	var textureFolderPath = url.replace(".js","") + "/";	
+	console.log("folder: " + textureFolderPath); 
+
+	jsonLoader.load( url, callback, textureFolderPath);
+
+	/*
+	var callbackGetJsonFiles = function ( jsonFilePaths ) {
+		var i;
+
+		var helper = function (i, jsonUrl) {
+
+
+			var jsonLoader = new THREE.JSONLoader();
+
+			// give folder path: 
+			var textureFolderPath = jsonUrl.replace(".js","") + "/";	
+			console.log("folder: " + textureFolderPath); 
+
+			jsonLoader.load( jsonUrl,  function( geometry, materials ) {
+
+				//get coordinates from kml file
+				var coords = {};
+				var urlKml = jsonUrl.replace(".js", ".kml"); 
+				var kmlFileLoaded = function( kmlFile ) {
+					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
+					coords.lat = coords.find("latitude")[0].innerHTML;
+					coords.lon = coords.find("longitude")[0].innerHTML;
+
+					coords.utm = getUtmFromLonLat( coords.lon, coords.lat );
+
+					// x-> y and y -> x as a matter of preference
+					coords.Y = coords.utm.x 
+					coords.X = coords.utm.y; 
+
+
+					var material = new THREE.MeshFaceMaterial( materials );
+					var mesh = new THREE.Mesh(geometry, material)
+
 		
-		georeferenceBuilding( mesh, building1, terrainInfo, scale, "json");	
-
-		scene.add(mesh);
-
+					georeferenceBuilding( mesh, coords, terrainInfo, scale, "json");
+					
+					scene.add(mesh);
+				
+				} 
+				$.get( urlKml, kmlFileLoaded );
 		
+				
+				callback();
+
+			}, textureFolderPath);
+
+		}
 		
-		callback();
+		console.log("Adding " + jsonFilePaths.length + " buildings");
 
-	});
+		for ( i = 0; i < jsonFilePaths.length; i++ ) {
 
+			helper(i, jsonFilePaths[i]);
+		}
+
+		callback(); // render()
+		
+	}
+
+	var directory = "../assets/3D-models/threejsNative/";
+	getFilesInDirectory( directory , ".js", callbackGetJsonFiles);
+	*/
+
+	
 }
 
 // testing georeferenceBuilding()
@@ -248,61 +450,4 @@ var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
 
 }
 
-
 console.log("import3dBuildings");
-
-var buildings = [];
-
-// Do later: Automate the reading of the hardcoded values. 
-// Hovedbygget
-var building1 =  {
-	srs : "UTM32",
-	lat : 63.419298, // hardcoded from a kml-file 
-	lon : 10.402173, // hardcoded from a kml-file 
-	path : "./../assets/3D-models/collada/Models with resized images/Grp 7 Hovedbygg Gloshaugen.dae",
-}
-
-// VM-brakke
-var building2 =  {
-	srs : "UTM32",
-	lat : 63.41729721313, // hardcoded from a kml-file 
-	lon : 10.40790886266, // hardcoded from a kml-file 
-	path : "./../assets/3D-models/collada/VM-brakke.dae",
-}
-
-// Elektro. Textures need to be resized to 2^x to fix texture issue. Will do that later. Also need to import bigger area of terrain 
-// On this builing it is also very obvious that not accounting for unhomogen terrain below an building is not good enougth.
-var building3 =  {
-	srs : "UTM32",
-	lat : 63.41797145098, // hardcoded from a kml-file 
-	lon : 10.40039257524, // hardcoded from a kml-file 
-	path : "./../assets/3D-models/collada/elektro.dae",
-}
-
-
-// Berg. Textures need to be resized to fix texture issue. Will do that later
-var building4 =  {
-	srs : "UTM32", 
-	lat : 63.41732442736, // hardcoded from a kml-file 
-	lon : 10.40664009821, // hardcoded from a kml-file 
-	path : "./../assets/3D-models/collada/berg2.dae",
-}
-
-
-buildings.push(building1);
-buildings.push(building2);
-buildings.push(building3);
-buildings.push(building4);
-
-var i, aBuilding;
-for (i = 0; i < buildings.length; i++) {
-	aBuilding = buildings[i];
-
-	aBuilding.utm = getUtmFromLonLat( aBuilding.lon, aBuilding.lat );
-
-	// x-> y and y -> x as a matter of preference
-	aBuilding.Y = aBuilding.utm.x // building1.Y = 7033073.6101;
-	aBuilding.X = aBuilding.utm.y; // building1.X = 570003.0541;
-
-
-}

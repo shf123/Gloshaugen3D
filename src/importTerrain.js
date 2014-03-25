@@ -1,3 +1,4 @@
+// should add option to use WCS from kartverket
 var importTerrain =  function( scene, callbackTerrainFinished) {
 	console.log("Import terrain");
 
@@ -21,7 +22,7 @@ var importTerrain =  function( scene, callbackTerrainFinished) {
 		var scale = {
 		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
 			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY)),
-		  	z : 1
+		  	z : 0.5
 		  };
 		  
 		console.log("Make PlaneGeometry");
@@ -45,7 +46,7 @@ var importTerrain =  function( scene, callbackTerrainFinished) {
 		console.log("Adding terrain z-values")
 		for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
 							
-			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2];			
+			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2]*scale.z;			
 
 		}
 			

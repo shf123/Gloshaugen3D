@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+
+  <Folder>
+    <name>Grp 7 Hovedbygg Gloshaugen</name>
+    <description>Created with &lt;a href="http://sketchup.google.com"&gt;Google SketchUp&lt;/a&gt;</description>
+    <visibility>1</visibility>
+    <LookAt>
+      <heading>101.3077309823</heading>
+      <tilt>65.73493208837</tilt>
+      <latitude>63.41931885443</latitude>
+      <longitude>10.40253858582</longitude>
+      <range>258.0463812413</range>
+      <altitude>98.86112347025</altitude>
+    </LookAt>
+    <Folder>
+      <name>Tour</name>
+      <Placemark>
+        <name>Scene 1</name>
+        <visibility>1</visibility>
+        <LookAt>
+          <heading>101.3077309823</heading>
+          <tilt>65.73493208837</tilt>
+          <latitude>63.41931885443</latitude>
+          <longitude>10.40253858582</longitude>
+          <range>258.0463812413</range>
+          <altitude>98.86112347025</altitude>
+        </LookAt>
+      </Placemark>
+    </Folder>
+    <Placemark>
+      <name>Model</name>
+      <description></description>
+      <Style id="default"/>
+      <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+          <latitude>63.419298</latitude>
+          <longitude>10.402173</longitude>
+          <altitude>0</altitude>
+        </Location>
+        <Orientation>
+          <heading>1.254111853776</heading>
+          <tilt>0</tilt>
+          <roll>0</roll>
+        </Orientation>
+        <Scale>
+          <x>1</x>
+          <y>1</y>
+          <z>1</z>
+        </Scale>
+        <Link>
+          <href>models/untitled.dae</href>
+        </Link>
+      </Model>
+    </Placemark>
+  </Folder>
+
+</kml>
