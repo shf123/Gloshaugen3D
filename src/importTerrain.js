@@ -21,9 +21,9 @@ var importTerrain =  function( scene, callbackTerrainFinished) {
 		
 		var scale = {
 		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
-			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY)),
-		  	z : 0.5
+			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY))  
 		  };
+		scale.z = 0.5; // (scale.x+scale.y)/2 <- maybe more accurate, but seem a bit flat;
 		  
 		console.log("Make PlaneGeometry");
 		terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
@@ -61,7 +61,8 @@ var importTerrain =  function( scene, callbackTerrainFinished) {
 
 var getMapTextureWms =  function (bbox, width, height, useNorgeIBilder) {
 	
-
+	console.log( "bbox: " + bbox);
+		
 	if ( getParameterFromUrl("useStoredTexture") === "true") {
 		return THREE.ImageUtils.loadTexture("../assets/texture.png"); //  made from a print screen -> less accurate 
 	}

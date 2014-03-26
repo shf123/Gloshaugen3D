@@ -1,0 +1,4 @@
+This folder contains kml files which contains the location
+of a building. They are made when exporting sketchup-files
+to the google earth format(kmz). The kmz is a zipped file containing
+a kml-file, a .dae-file and image files.

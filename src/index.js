@@ -29,15 +29,12 @@ var init = function() {
 	stats.domElement.style.right = '0px';
 	document.body.appendChild( stats.domElement );
 	
-	console.log("checkpoint 1");
-	// terrain. The importing of the terrain should probably be moved to another file
+	// terrain. 
 	var runAfterTerrainIsImported =  function( terrainInfo, scale ) {
-		console.log("checkpoint 3");
 		addBuildingsToScene( terrainInfo, scale, scene,  function() {
 			render();
 		}); // import3dBuildings.js
 	}
-	console.log("checkpoint 2");
 	importTerrain( scene, runAfterTerrainIsImported ); // importTerrain.js
 	
 	

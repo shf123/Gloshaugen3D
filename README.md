@@ -1,6 +1,9 @@
 Gloshaugen3D
 ============
 Visualization of Gløshaugen as part of my master thesis.<br>
+Terrain data from kartverket is used, and the 3D-models of 
+the buildings in Gløshaugen were made by students at NTNU.
+
 Oculus Rift support will be added later.
 
 

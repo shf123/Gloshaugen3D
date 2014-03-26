@@ -22,7 +22,7 @@ var getUtmFromLonLat = function ( lon, lat, lon0, lat0, ellipsoid, coordSystem )
 
 var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
-	console.log("Adidng buildings");
+	console.log("Adding buildings");
 	var objtype = getParameterFromUrl("model") || "collada";
 
 
@@ -64,7 +64,13 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 				//get coordinates from kml file
 				var coords = {};
-				var urlKml = url.replace("." + objtype, ".kml"); 
+				var kmlDirectory = "../assets/3D-models/kml/";
+				var fileName = url.split("/");  // Does this work on non windows platforms? / vs \?
+				fileName = fileName[fileName.length-1];
+				var kmlName = fileName.replace("." + objtype, ".kml");
+				var urlKml = kmlDirectory + kmlName; 
+
+				console.log("kml-file: " + urlKml);
 				var kmlFileLoaded = function( kmlFile ) {
 					
 					var coords = $(kmlFile).find("Placemark").find("Model").find("Location");
@@ -75,7 +81,12 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 					// x-> y and y -> x as a matter of preference
 					coords.Y = coords.utm.x 
-					coords.X = coords.utm.y; 		
+					coords.X = coords.utm.y; 
+
+
+					console.log("wgs84: " + coords.lat + ", "  + coords.lon);
+					console.log("utm32: " + coords.Y + ", "  + coords.X);
+							
 					
 					georeferenceBuilding( object, coords, terrainInfo, scale, objtype );
 					
@@ -123,21 +134,32 @@ var getFilesInDirectory = function ( directory , fileExtension, callback) {
 	var directoryLoaded = function( data ) {
 		var i;	
 
-		var daeFilesHtml = $(data).find("a:contains(" + "." + fileExtension + ")");
+		var files = $(data).find("a:contains(" + "." + fileExtension + ")");
 
 		var urls = [];	
 
-		for ( i = 0; i < daeFilesHtml.length; i++) {
+		for ( i = 0; i < files.length; i++) {
 
-			var urlDae = directory + daeFilesHtml[i].innerHTML;
-			urls.push(urlDae);
+			var url = directory + files[i].innerHTML;
 
-			console.log("Got ." + fileExtension + " path: " + urlDae );
-			
-
+			// don't add if the file extension is in the end of the path, e.g. <dir>/somename.<file extension><more text>
+			if ( isSuffix(url, fileExtension) ) {
+				urls.push(url);
+				console.log("Got ." + fileExtension + " path: " + url );
+			} 
 
 		}
 		callback( urls );
+
+	}
+
+	var isSuffix = function  ( string, suffix ) {
+		if (string.lastIndexOf( suffix ) !== -1 ) {
+			return string.lastIndexOf(suffix) + suffix.length === string.length;
+		}
+		else {
+			return false;
+		}
 
 	}
 
@@ -145,6 +167,7 @@ var getFilesInDirectory = function ( directory , fileExtension, callback) {
 
 
 }
+
 
 var loadDaeBuilding = function( url, callback ) {
 	
@@ -175,24 +198,31 @@ var loadJsonBuilding = function( url, callback)  {
 }
 
 // testing georeferenceBuilding()
-var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback ) {
+var addDebugGeometriesToScene  = function ( terrainInfo, scale, scene, callback ) {
 	console.log("addDebugGeometriesToScene");
 
 	var x, y, xMin, yMin, xMax, yMax;
+	var i;
+	
+	
 	xMin = 569905;
-	yMin = 7032305;
+	yMin = 7032305; 
 	xMax = 570495;
 	yMax = 7033295;
 
-
-
 	var log = "";
-	for (x = xMin; x < xMax; x += 10*2) {
-		for (y = yMin; y < yMax; y += 10*2) {
+	var sizeX = 5;
+	var sizeY = 5;
+
+	for (x = xMin; x <= xMax; x += 59) {
+		for (y = yMin; y <= yMax; y += 99) {
 		
+			//if( x !== xMin && x !== xMax  && y !== yMin && y !== yMax){
+			//	break;
+			//}
 			
-			var boxG = new THREE.BoxGeometry( 5,5,1 );
-			var boxM = new THREE.MeshBasicMaterial( );
+			var boxG = new THREE.BoxGeometry( sizeX,sizeY,1 );
+			var boxM = new THREE.MeshBasicMaterial( {color: 0xdd0000} );
 			var boxMesh = new THREE.Mesh( boxG, boxM );
 			
 			var buildingInfo =  {
@@ -200,7 +230,7 @@ var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback )
 				Y : y	
 			}
 
-			georeferenceBuilding ( boxMesh , buildingInfo, terraininfo, scale, "dae");
+			georeferenceBuilding ( boxMesh , buildingInfo, terrainInfo, scale, "dae");
 
 			log += "x,y,z: " + boxMesh.position.x + ", " +  boxMesh.position.y  + ", " +  boxMesh.position.z  + "\n";
 
@@ -209,6 +239,65 @@ var addDebugGeometriesToScene = function ( terraininfo, scale, scene, callback )
 		}
 		console.log(log);
 	}
+
+	// Add specific points:	
+	var point1 = {
+		name : 'Crossing path in the lawn between hovedbygget and sentralbygget',
+		lat : 63.41860, 
+		lon : 10.40277,
+		Y   : 7032997,
+		X 	: 570030
+	}
+
+	var point2 = {
+		name : 'Center of roundabout near "lerkendalsbygget"',
+		lat : 63.41489, 
+		lon : 10.40756,
+		Y   : 7032588,  
+		X   : 570279
+	}
+
+	var point3 = {
+		name : 'Upper east corner of realfagsbygget',
+		lat : 63.41672, 
+		lon : 10.40704,
+		Y   : 7032792,  
+		X   : 570248
+	}
+
+
+	var specificTestPoints = [ point1, point2, point3 ];
+
+	var radius = 1;
+	var height = 20;
+	var convertFromWgsAnyway = true;
+	for ( i = 0; i < specificTestPoints.length; i++ ) {
+
+
+		var geometry = new THREE.CylinderGeometry( radius, radius, height );
+		var material = new THREE.MeshBasicMaterial( { color: 0x0000ff} );
+		var mesh = new THREE.Mesh(geometry, material); 
+
+		var point = specificTestPoints[i];
+		
+		if ((!point.X || !point.Y) || convertFromWgsAnyway )  {
+			point.utm = getUtmFromLonLat( point.lon, point.lat );
+			// x-> y and y -> x as a matter of preference
+			point.Y = point.utm.x 
+			point.X = point.utm.y; 
+		}
+
+		console.log("name: " + point.name);
+		console.log("wgs84: " + point.lat + ", "  + point.lon);
+		console.log("utm32: " + point.Y + ", "  + point.X);
+		
+		georeferenceBuilding( mesh, point, terrainInfo, scale, "debug" );
+		
+		scene.add( mesh );
+
+	}
+
+
 	console.log("Callback");
 	callback();		
 
@@ -249,27 +338,33 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 
 var getVirtualZValue = function(buildingX, buildingY, scale, terrainInfo) {
 
+	if (buildingX < terrainInfo.minX || buildingX > terrainInfo.maxX 
+		|| buildingY < terrainInfo.minY  || buildingY > terrainInfo.maxY) {
+		console.log("building outside terrain data!");
+		return 0; // there is no terrain data at this coordinate 
+	}
+
 	var localX = (buildingX - terrainInfo.minX)*scale.x;
 	var localY = (buildingY - terrainInfo.minY)*scale.y;
 
-	var verticesX = terrainInfo.xVertices();
-	var verticesY = terrainInfo.yVertices();
+	var verticesX = terrainInfo.xVertices(); // 60
+	var verticesY = terrainInfo.yVertices(); // 100
 
 	// need to document why this formulas is like this
 	var terrainWidth = scale.x * (terrainInfo.maxX-terrainInfo.minX); 
 	var terrainHeight = scale.y * (terrainInfo.maxY-terrainInfo.minY); 
 
 
-	var xNumber = (localX) * verticesX / terrainWidth;
-	var yNumber = (verticesY-1) - ((localY) * verticesY / terrainHeight); // Northvalues increases upwards, y-values increases downwords
+	var xNumber = (localX) * (verticesX-1) / terrainWidth;
+	var yNumber = (verticesY-1) - ((localY) * (verticesY-1) / terrainHeight); // Northvalues increases upwards, y-values increases downwords
 
 
 	//Simplifying. :( Should do som interpolation
-	var xNumber = Math.round(xNumber);
+	var xNumber = Math.round(xNumber); // 
 	var yNumber = Math.round(yNumber);
 
 
-	var terrainIndex = yNumber*verticesX + xNumber;
+	var terrainIndex = yNumber*verticesX + xNumber; 
 	var z = terrainGeometry.vertices[terrainIndex].z; // terrainGeometry is global
 
 
