@@ -11,7 +11,9 @@ var init = function() {
 
 	// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
 	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
-	camera.position.z = 100;
+	camera.position.z = 30;
+	camera.rotation.x = Math.PI / 2;
+	
 
 
 	// controls
@@ -22,6 +24,26 @@ var init = function() {
 	renderer.setSize( width, height );
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
 	
+	// use oculus rift?
+	if ( useOculus ) {
+		var oculusOrientationChanged = function ( quat ) {
+			oculusOrientation = quat;
+		}
+
+		oculus = new THREE.OculusRiftEffect(renderer);
+		oculusBridge = new OculusBridge( {"onConnect" : function() { 
+			        console.log("oculus is connected");
+			    },
+			    "onDisconnect" : function() {
+			        console.log("oculus is disconnected");
+			    },
+			    "onOrientationUpdate" : oculusOrientationChanged
+				});
+		oculusBridge.connect();
+
+	}
+
+
 	// initilize stats
 	stats = new Stats();
 	stats.domElement.style.position = 'absolute';
@@ -37,6 +59,15 @@ var init = function() {
 	}
 	importTerrain( scene, runAfterTerrainIsImported ); // importTerrain.js
 	
+
+	// add start position object
+	var geometry = new THREE.CubeGeometry( 3,3,3 );
+	var material = new THREE.MeshBasicMaterial();
+	var mesh = new  THREE.Mesh( geometry, material );
+	mesh.position.z = 23;
+
+
+
 	
 	// light
 	var light = new THREE.AmbientLight( 0xababab ) ;
@@ -71,13 +102,17 @@ var render = function ()  {
 	requestAnimationFrame( render );
 
 	controls.update();
-	renderer.render( scene, camera );
-
-	if (debug) {
-		//boundingBoxTerrain.update();
-		//boundingBoxHovedbygg.update();
+	
+	if ( oculus ) {
+		if ( oculusOrientation ) {
+			camera.quaternion.set(oculusOrientation.x, oculusOrientation.y, oculusOrientation.z, oculusOrientation.w);
+		}
+		oculus.render( scene, camera );
 	}
-
+	else {
+		renderer.render( scene, camera );	
+	}
+	
 	stats.end();
 
 	return;
@@ -101,6 +136,13 @@ var getParameterFromUrl = function( parameter ) {
 
 var scene, camera, renderer, controls, stats;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
+
+var oculus = null;
+var oculusBridge = null;
+var oculusOrientation = null;
+var useOculus = getParameterFromUrl("oculus") === "true" ;
+
+
 
 var debugVariable;
 var terrainGeometry;

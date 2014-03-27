@@ -1,6 +1,11 @@
 <html>
 	<head>
-	
+		<style>
+			body {
+				margin:0px;
+			}
+		</style>
+
 	</head>
 	
 	<body>
@@ -28,12 +33,15 @@
 	<script type="text/javascript" src="../libs/loaders/OBJMTLLoader.js"></script>
 	<script type="text/javascript" src="../libs/loaders/MTLLoader.js"></script>
 
+	<!-- Oculus rift support -->
+	<script src="../libs/oculus/OculusBridge.js"></script>
+	<script src="../libs/oculus/RiftCamera.js"></script>
+
 	<!-- List of layers in topo2 from kartverket -->
 	<script src="./topo2.layers.js"></script>
 
 
 
-	<h3> Simple Terrain </h3>
 	<div id="threejs"></div>
 	
 	<script src="./import3dbuildings.js"></script>
