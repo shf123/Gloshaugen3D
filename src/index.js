@@ -17,7 +17,7 @@ var init = function() {
 
 
 	// controls
-	controls = new THREE.TrackballControls( camera );
+	controls = new THREE.FlyControls( camera );
 
 	// renderer
 	renderer = new THREE.WebGLRenderer();
@@ -101,7 +101,7 @@ var render = function ()  {
 
 	requestAnimationFrame( render );
 
-	controls.update();
+	controls.update(1);
 	
 	if ( oculus ) {
 		if ( oculusOrientation ) {
