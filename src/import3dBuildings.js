@@ -163,8 +163,13 @@ var getFilesInDirectory = function ( directory , fileExtension, callback) {
 
 	}
 
-	$.get( directory, directoryLoaded);
+	// this did not work at github pages. 
+	//$.get( directory, directoryLoaded);
 
+	// so I made a file named fileList.html in the directory that will be used instead. Hopefully this can be improved later
+	var path =  directory + "fileList.html";
+	console.log("fileList path: " + path);
+	$.get( path, directoryLoaded );
 
 }
 
