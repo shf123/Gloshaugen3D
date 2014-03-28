@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<style>
+			body {
+				margin:0px;
+			}
+		</style>
+
+	</head>
+	
+	<body>
+	
+	<!-- R66 of Three.js. Using no-minified version in development -->
+	<script src="../libs/threeR66.js"></script>
+	<!--<script src="../libs/threeR66.min.js"></script> -->
+	
+	<!-- jQuery -->
+	<script src="../libs/jquery-2.1.0.min.js"></script>
+	
+	<!-- Orient camera with mouse -->
+	<script src="../libs/TrackballControls.js"></script>
+	
+	<!-- Stats library -->
+	<script src="../libs/stats.js"></script>
+
+	<!-- For converting given WGS84 coordinates to UTM -->
+	<script src="../libs/holsenjs.js"></script>
+
+	<!-- Library for loading .dae files -->
+	<script src="../libs/loaders/ColladaLoader.js"></script>
+
+	<!-- Library for loading .obj files -->
+	<script type="text/javascript" src="../libs/loaders/OBJMTLLoader.js"></script>
+	<script type="text/javascript" src="../libs/loaders/MTLLoader.js"></script>
+
+	<!-- Oculus rift support -->
+	<script src="../libs/oculus/OculusBridge.js"></script>
+	<script src="../libs/oculus/RiftCamera.js"></script>
+
+	<!-- List of layers in topo2 from kartverket -->
+	<script src="./topo2.layers.js"></script>
+
+
+
+	<div id="threejs"></div>
+	
+	<script src="./import3dbuildings.js"></script>
+	<script src="./importTerrain.js"></script>
+	<script src="./index.js"></script>
+
+	
+	</body>
+</html>

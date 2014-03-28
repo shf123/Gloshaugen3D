@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+
+  <Folder>
+    <name>Berg2</name>
+    <description>Created with
+      <a href="http://sketchup.google.com"> Google SketchUp</a>
+    </description>
+    <visibility>1</visibility>
+    <LookAt>
+      <heading>252.2801321434</heading>
+      <tilt>50.80541375274</tilt>
+      <latitude>63.41734500995</latitude>
+      <longitude>10.40693953789</longitude>
+      <range>115.8439364144</range>
+      <altitude>101.6634261628</altitude>
+    </LookAt>
+    <Folder>
+      <name>Tour</name>
+      <Placemark>
+        <name>Scene 1</name>
+        <visibility>1</visibility>
+        <LookAt>
+          <heading>252.2801321434</heading>
+          <tilt>50.80541375274</tilt>
+          <latitude>63.41734500995</latitude>
+          <longitude>10.40693953789</longitude>
+          <range>115.8439364144</range>
+          <altitude>101.6634261628</altitude>
+        </LookAt>
+      </Placemark>
+    </Folder>
+    <Placemark>
+      <name>Model</name>
+      <description></description>
+      <Style id="default"/>
+      <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+          <latitude>63.41732442736</latitude>
+          <longitude>10.40664009821</longitude>
+          <altitude>0</altitude>
+        </Location>
+        <Orientation>
+          <heading>1.258085906589</heading>
+          <tilt>0</tilt>
+          <roll>0</roll>
+        </Orientation>
+        <Scale>
+          <x>1</x>
+          <y>1</y>
+          <z>1</z>
+        </Scale>
+        <Link>
+          <href>models/untitled.dae</href>
+        </Link>
+      </Model>
+    </Placemark>
+  </Folder>
+
+</kml>

@@ -1,0 +1,1 @@
+I hope to eventuelly add support for reading the kmz-files.

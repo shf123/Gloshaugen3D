@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://earth.google.com/kml/2.1'>
+<Folder>
+    <name>Gløs G8 v2-3c(4)</name>
+    <description><![CDATA[Created with <a href="http://sketchup.google.com/">Google SketchUp 6.0.515</a>]]></description>
+    <DocumentSource>SketchUp</DocumentSource>
+<visibility>1</visibility>
+<LookAt>
+<heading>316.962</heading>
+<tilt>71.7578</tilt>
+<latitude>63.413898684696</latitude>
+<longitude>10.4147891664091</longitude>
+<range>380.6842916799218</range>
+<altitude>123.3519813643937</altitude>
+</LookAt>
+<Folder>
+<name>Tour</name>
+<Placemark>
+<name>Camera</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>316.962</heading>
+<tilt>71.7578</tilt>
+<latitude>63.413898684696</latitude>
+<longitude>10.4147891664091</longitude>
+<range>380.6842916799218</range>
+<altitude>123.3519813643937</altitude>
+</LookAt>
+</Placemark>
+</Folder>
+  <Placemark>
+    <name>Model</name>
+    <description><![CDATA[]]></description>
+    <Style id='default'>
+    </Style>
+    <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+            <longitude>10.408766772850</longitude>
+            <latitude>63.416211904743</latitude>
+            <altitude>0.000000000000</altitude>
+        </Location>
+        <Orientation>
+            <heading>0</heading>
+            <tilt>0</tilt>
+            <roll>0</roll>
+        </Orientation>
+        <Scale>
+            <x>1.0</x>
+            <y>1.0</y>
+            <z>1.0</z>
+        </Scale>
+        <Link>
+            <href>models/Gløs G8 v2-3c(4).dae</href>
+        </Link>
+    </Model>
+  </Placemark></Folder>
+</kml>

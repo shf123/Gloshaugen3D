@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+
+  <Folder>
+    <name>Driftssentral_1</name>
+    <description>Created with
+      <a href="http://sketchup.google.com"> Google SketchUp</a>
+    </description>
+    <visibility>1</visibility>
+    <LookAt>
+      <heading>245.8077665371</heading>
+      <tilt>27.27384382764</tilt>
+      <latitude>63.40998373126</latitude>
+      <longitude>10.40808807015</longitude>
+      <range>152.9089840494</range>
+      <altitude>155.3801736194</altitude>
+    </LookAt>
+    <Folder>
+      <name>Tour</name>
+      <Placemark>
+        <name>Scene 1</name>
+        <visibility>1</visibility>
+        <LookAt>
+          <heading>245.8077665371</heading>
+          <tilt>27.27384382764</tilt>
+          <latitude>63.40998373126</latitude>
+          <longitude>10.40808807015</longitude>
+          <range>152.9089840494</range>
+          <altitude>155.3801736194</altitude>
+        </LookAt>
+      </Placemark>
+    </Folder>
+    <Placemark>
+      <name>Model</name>
+      <description></description>
+      <Style id="default"/>
+      <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+          <latitude>63.40996195338</latitude>
+          <longitude>10.40829158834</longitude>
+          <altitude>0</altitude>
+        </Location>
+        <Orientation>
+          <heading>1.259482160076</heading>
+          <tilt>0</tilt>
+          <roll>0</roll>
+        </Orientation>
+        <Scale>
+          <x>1</x>
+          <y>1</y>
+          <z>1</z>
+        </Scale>
+        <Link>
+          <href>models/untitled.dae</href>
+        </Link>
+      </Model>
+    </Placemark>
+  </Folder>
+
+</kml>

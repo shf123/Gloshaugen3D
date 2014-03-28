@@ -1,0 +1,9 @@
+The kmz files of interest, is a zip file containing a collada file, 
+textures and kml file with the position(in WGS) of the collada file.
+
+File structure:
+doc.kml
+models
+-- untitled.dae
+-- untitled
+   |-- *.jpg
