@@ -315,14 +315,14 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 	if ( objecttype === "dae") {
 		object.scale.x *= scale.x;
 		object.scale.y *= scale.y;
-		object.scale.z *= 0.5; // calculated guess
+		object.scale.z *= scale.z;
 	}
 	// obj or js/native threejs 
 	else {
 
 		object.scale.x *= scale.x;
 		object.scale.z *= scale.y;	// switch of z and y since default settings in blender exporter did this. should be checked if it is normal for obj and json objects in general
-		object.scale.y *= 0.5; // calculated guess
+		object.scale.y *= scale.z; 
 
 		// this rotation works
 		object.rotation.x = -Math.PI / 2; // point up

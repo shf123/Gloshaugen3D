@@ -23,7 +23,7 @@ var importTerrain =  function( scene, callbackTerrainFinished) {
 		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
 			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY))  
 		  };
-		scale.z = 0.5; // (scale.x+scale.y)/2 <- maybe more accurate, but seem a bit flat;
+		scale.z = (scale.x+scale.y)/2 
 		  
 		console.log("Make PlaneGeometry");
 		terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
@@ -64,7 +64,8 @@ var getMapTextureWms =  function (bbox, width, height, useNorgeIBilder) {
 	console.log( "bbox: " + bbox);
 		
 	if ( getParameterFromUrl("useStoredTexture") === "true") {
-		return THREE.ImageUtils.loadTexture("../assets/texture.png"); //  made from a print screen -> less accurate 
+		var path = getParameterFromUrl("norgeIBilder") === "true" ? "../assets/textureSat.png" : "../assets/texture.png";
+		return THREE.ImageUtils.loadTexture(path); 
 	}
 
 	var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
@@ -92,7 +93,7 @@ var getMapTextureWms =  function (bbox, width, height, useNorgeIBilder) {
 	
 	
 	var url = path + '&crs=' + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
-	+ bbox + '&WIDTH=' + width + '&HEIGHT=' + height;
+	+ bbox + '&WIDTH=' + widthSegments + '&HEIGHT=' + height;
 	
 	console.log("texture url: " + url);
 	var imageUtilsCors = THREE.ImageUtils;
