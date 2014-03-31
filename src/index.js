@@ -111,7 +111,7 @@ var render = function ()  {
 	if ( oculus ) {
 		if ( oculusOrientation ) {
 			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
-			camera.quaternion.set(oculusOrientation.x, oculusOrientation.y, oculusOrientation.z, oculusOrientation.w);
+			camera.quaternion.set(oculusOrientation.x, oculusOrientation.z, oculusOrientation.y, oculusOrientation.w);
 			camera.rotateX(Math.PI/2); // Change angle so it gets more natural
 		}
 		oculus.render( scene, camera );
