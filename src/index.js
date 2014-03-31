@@ -11,13 +11,16 @@ var init = function() {
 
 	// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
 	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
-	camera.position.z = 30;
+	camera.position.z = 12;
 	camera.rotation.x = Math.PI / 2;
 	
 
 
 	// controls
 	controls = new THREE.FlyControls( camera );
+	controls.movementSpeed = 0.5;
+	controls.rollSpeed = 0.015;
+	controls.dragToLook = true;
 
 	// renderer
 	renderer = new THREE.WebGLRenderer();
@@ -68,6 +71,8 @@ var init = function() {
 
 
 
+
+
 	
 	// light
 	var light = new THREE.AmbientLight( 0xababab ) ;
@@ -105,7 +110,9 @@ var render = function ()  {
 	
 	if ( oculus ) {
 		if ( oculusOrientation ) {
+			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
 			camera.quaternion.set(oculusOrientation.x, oculusOrientation.y, oculusOrientation.z, oculusOrientation.w);
+			camera.rotateX(Math.PI/2); // Change angle so it gets more natural
 		}
 		oculus.render( scene, camera );
 	}
