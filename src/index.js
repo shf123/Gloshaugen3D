@@ -18,9 +18,6 @@ var init = function() {
 
 	// controls
 	controls = new THREE.FlyControls( camera );
-	controls.movementSpeed = 0.5;
-	controls.rollSpeed = 0.015;
-	controls.dragToLook = true;
 
 	// renderer
 	renderer = new THREE.WebGLRenderer();
@@ -110,9 +107,8 @@ var render = function ()  {
 	
 	if ( oculus ) {
 		if ( oculusOrientation ) {
-			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
-			camera.quaternion.set(oculusOrientation.x, oculusOrientation.y, oculusOrientation.z, oculusOrientation.w);
-			camera.rotateX(Math.PI/2); // Change angle so it gets more natural
+			camera.quaternion.set(oculusOrientation.x, oculusOrientation.z, oculusOrientation.y, oculusOrientation.w);
+			camera.rotateZ(Math.PI/2);// Change angle so it gets more natural
 		}
 		oculus.render( scene, camera );
 	}
