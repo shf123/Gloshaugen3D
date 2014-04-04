@@ -18,6 +18,9 @@ var init = function() {
 
 	// controls
 	controls = new THREE.FlyControls( camera );
+	controls.movementSpeed = 0.5;
+ 	controls.rollSpeed = 0.015;
+ 	controls.dragToLook = true;
 
 	// renderer
 	renderer = new THREE.WebGLRenderer();
