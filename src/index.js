@@ -142,6 +142,11 @@ var getParameterFromUrl = function( parameter ) {
 	return undefined;
 }
 
+// Check webgl
+if ( !Detector.webgl ) {
+	Detector.addGetWebGLMessage();
+}
+
 var scene, camera, renderer, controls, stats;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
 
