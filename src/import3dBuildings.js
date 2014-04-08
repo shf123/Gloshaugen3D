@@ -51,16 +51,41 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 		var helper = function (i, url) {
 		
 			var whenFinishedJson = function( geometry, materials) {
+				geometry.computeVertexNormals(); // necessary for collision detection and raycasting
+
 				var material = new THREE.MeshFaceMaterial( materials );
 				var object = new THREE.Mesh(geometry, material );
 				whenFinished ( object );
 			}
 
 			var whenFinishedDae = function ( collada ) {
+				var j;
+				// compute vertex normals for collision detection.  
+				var meshs =  collada.scene.children[0].children; // scene.children only contains one element
+				for ( j = 0; j < meshs.length; j++ ) {
+					var aMesh = meshs[j];
+					if (aMesh.geometry) { // meshs also contains Object3Ds in addition to meshs
+						aMesh.geometry.computeVertexNormals();
+					}
+				}
+
 				whenFinished( collada.scene );
 			}
 
+			var whenFinishedObj = function ( object ) {
+				var j;
+				// compute vertex normals for collision detection. does not work :(.  
+				for ( j = 0; j < object.children.length; j++ ) {
+					var aMesh = object.children[j].children[0];
+					aMesh.geometry.computeVertexNormals();
+				}
+
+				whenFinished( object );
+			}
+
 			var whenFinished = function ( object ) {
+
+
 
 				//get coordinates from kml file
 				var coords = {};
@@ -104,6 +129,8 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 				case "js":
 					loader( url, whenFinishedJson );
 					break;
+				case "obj":
+					loader( url, whenFinishedObj );
 				default:
 					loader( url, whenFinished );
 			}

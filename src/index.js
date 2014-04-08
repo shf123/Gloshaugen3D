@@ -10,7 +10,7 @@ var init = function() {
 	scene = new THREE.Scene();
 
 	// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
-	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
+	camera = new THREE.PerspectiveCamera( 10, width/height, 0.1, 10000 );
 	camera.position.z = 12;
 	camera.rotation.x = Math.PI / 2;
 	
@@ -83,6 +83,10 @@ var init = function() {
 	light2.position = camera.position;
 	scene.add( light2 );
 	
+
+	// testing raycasting with the CollisionDetection file
+	var collisionDetection = new CollisionDetection( camera, scene );
+
 
 	// Debug geometries
 	// create axis helper (for debugging)
