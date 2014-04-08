@@ -88,6 +88,9 @@ var init = function() {
 	var collisionDetection = new CollisionDetection( camera, scene );
 
 
+	window.addEventListener('resize', onResize, false);
+
+
 	// Debug geometries
 	// create axis helper (for debugging)
 	if (debug) {
@@ -130,6 +133,13 @@ var render = function ()  {
 	return;
 };
 
+var onResize = function ( event ) {
+		camera.aspect =  window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}
+
 
 // Returns value of parameter if it exist. 
 var getParameterFromUrl = function( parameter ) {
@@ -165,6 +175,7 @@ var debugVariable;
 var terrainGeometry;
 
 init();
+
 
 
 
