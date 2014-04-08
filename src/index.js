@@ -10,7 +10,7 @@ var init = function() {
 	scene = new THREE.Scene();
 
 	// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
-	camera = new THREE.PerspectiveCamera( 10, width/height, 0.1, 10000 );
+	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
 	camera.position.z = 12;
 	camera.rotation.x = Math.PI / 2;
 	
