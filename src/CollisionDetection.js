@@ -75,7 +75,7 @@ function CollisionDetection( camera, scene ) {
 		dirVectors.push(  new THREE.Vector3(  1,  0,  0 ) ); // right
 		dirVectors.push(  new THREE.Vector3( -1,  0,  0 ) ); // left
 		dirVectors.push(  new THREE.Vector3(  0,  1,  0 ) ); // forward
-		dirVectoras.push(  new THREE.Vector3(  0, -1,  0 ) ); // back
+		dirVectors.push(  new THREE.Vector3(  0, -1,  0 ) ); // back
 
 		var projector = new THREE.Projector();
 		var raycasters = new Array( dirVectors.length );
