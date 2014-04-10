@@ -21,7 +21,7 @@ var init = function() {
 
 	addSomeDebugStuffIfDebug()
 	
-	importTerrain( scene, addBuildingsCallback ); // importTerrain.js
+	addTerrainAndBuildings();
 	
 	// testing raycasting with the CollisionDetection file
 	//var collisionDetection = new CollisionDetection( camera, scene );
@@ -98,9 +98,24 @@ var addSomeDebugStuffIfDebug = function() {
 	}
 }
 
+var addTerrainAndBuildings = function() {
+	var terrainImporter = new TerrainImporter( scene, addBuildingsCallback );
+	
+	if ( getParameterFromUrl('wcs') === "true" ) {
+		var wcsName = "wcsKartverket";
+		var bbox = "569900,7032300,570500,7033300";
+		terrainImporter.importTerrainWCS( wcsName, bbox );
+	}
+	else {
+		terrainImporter.importTerrainFile( "../assets/gloshaugen.xyz" );
+	}
+}
+
 var addBuildingsCallback =  function( terrainInfo, scale ) {
 	addBuildingsToScene( terrainInfo, scale, scene,  render ); // import3dBuildings.js
 }
+
+
 
 var render = function ()  {
 
