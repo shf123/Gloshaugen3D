@@ -66,10 +66,14 @@ function CollisionDetection( camera, scene ) {
 
 
 	// not finished yet
+	glob = undefined;
 	var isColliding = function() {
 		var i, dirVector;
 
+
 		var dirVectors = [];
+		glob = dirVectors;
+
 		dirVectors.push(  new THREE.Vector3(  0,  0,  1 ) ); // up
 		dirVectors.push(  new THREE.Vector3(  0,  0, -1 ) ); // down
 		dirVectors.push(  new THREE.Vector3(  1,  0,  0 ) ); // right
@@ -80,6 +84,106 @@ function CollisionDetection( camera, scene ) {
 		var projector = new THREE.Projector();
 		var raycasters = new Array( dirVectors.length );
 
+
+		// first vector
+		dirVector = dirVectors[0];
+		projector.unprojectVector( dirVector, camera );
+		dirVector.sub( camera.position ).normalize(); 
+		raycasters[0] = new THREE.Raycaster( camera.position, dirVector );
+
+		var intersections = raycasters[0].intersectObjects( scene.children, true );
+		
+		// debug locate intersection
+		if ( intersections.length > 0 ) {
+			var geom = new THREE.CubeGeometry(1,1,1);
+			var color = '#ff0000';
+	 		var mat = new THREE.MeshBasicMaterial({ 'color':  color }); 
+	 		var mesh = new THREE.Mesh( geom, mat );
+	 		mesh.position = intersections[0].point;
+	 		
+	 		scene.add(mesh);
+
+		}
+		console.log( intersections );
+
+
+		// the rest of the vectors
+		for ( i = 1; i < dirVectors.length; i++ ) {
+			
+			dirVector = dirVectors[0].clone();
+			var xAxis = new THREE.Vector3( 1, 0, 0 );
+			var yAxis = new THREE.Vector3( 0, 1, 0 );
+			var zAxis = new THREE.Vector3( 0, 0, 1 );
+			
+			
+			switch(i) {
+					case 1: // backwards?
+						var matrix = new THREE.Matrix4().makeRotationAxis( xAxis, Math.PI);
+						dirVector.applyMatrix4( matrix );
+						break;
+					case 2: // left?
+						var matrix = new THREE.Matrix4().makeRotationAxis( zAxis, Math.PI);
+						dirVector.applyMatrix4( matrix );
+						break;
+					case 3: // right?
+						var matrix = new THREE.Matrix4().makeRotationAxis( zAxis, 3*Math.PI/2);
+						dirVector.applyMatrix4( matrix );
+						break;
+					case 4:
+						var matrix = new THREE.Matrix4().makeRotationAxis( yAxis, Math.PI/2);
+						dirVector.applyMatrix4( matrix );
+						break;
+					case 5:
+						var matrix = new THREE.Matrix4().makeRotationAxis( yAxis, 3*Math.PI/2);
+						dirVector.applyMatrix4( matrix );
+						break;
+								
+			}
+
+
+
+
+			raycasters[i] = new THREE.Raycaster( camera.position, dirVector );
+			var intersections = raycasters[i].intersectObjects( scene.children, true );
+			
+			// debug locate intersection
+			if ( intersections.length > 0 ) {
+				var geom = new THREE.CubeGeometry(1,1,1);
+				var color;
+				switch(i) {
+					case 0:
+						color = '#ff0000';
+						break;
+					case 1:
+						color = '#880000';
+						break;
+					case 2:
+						color = '#00ff00';
+						break;
+					case 3:
+						color = '#008800';
+						break;
+					case 4:
+						color = '#0000ff';
+						break;
+					case 5:
+						color = '#000088';
+						break;
+								
+				}
+
+		 		var mat = new THREE.MeshBasicMaterial({ 'color':  color }); 
+
+		 		var mesh = new THREE.Mesh( geom, mat );
+		 		mesh.position = intersections[0].point;
+		 		
+		 		scene.add(mesh);
+			}
+			console.log( intersections );
+
+		}
+
+		/*
 		for ( i = 0; i < dirVectors.length; i++ ) {
 			
 			dirVector = dirVectors[i];
@@ -123,7 +227,7 @@ function CollisionDetection( camera, scene ) {
 			}
 			console.log( intersections );
 
-		}
+		}*/
 
 
 	}
