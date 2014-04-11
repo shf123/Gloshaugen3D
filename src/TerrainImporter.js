@@ -5,113 +5,123 @@ function TerrainImporter ( callback ) {
 
 
 	this.importTerrainFile = function( terrainFilePath ) {
-		this.loadTextFile( terrainFilePath, xyzLoaded );
-		
-
-	}
+		// TODO: Check that the file type is correct
+		this.loadTextFile( terrainFilePath, xyzFileLoaded ); 
+	};
 
 	this.importTerrainWCS = function( wcsName, bbox ) {
-		var url = wcsServices.toString( wcsName, bbox );
-		this.loadTextFile( url, xyzLoaded );
-	}
+		var url = wcsServices.toString( wcsName, bbox, 100, 100 ); // width and height = 100
+		
+		var format = wcsServices[wcsName].parameters.format;
+		switch(format) {
+			case "xyz":
+				this.loadTextFile( url, xyzFileLoaded );	
+				break;
+			default: 
+				throw new Error("The format '" + format + "' is not supported!" );
+		}
+
+		
+	};
 
 	this.loadTextFile = function( url, callback ) {
 		$.get( url,  callback );
-	}
+	};
 
-	var xyzLoaded = function( data ) {
+	var xyzFileLoaded = function( data ) {
+		
 		var terrain = that.splitTextFile( data );
-
-		
 		var terrainInfo = that.getDataInfoFromTerrain(terrain);
-		var bbox = terrainInfo.bbox; // "569900,7032300,570500,7033300";
-		var widthVertices = terrainInfo.xVertices();
-		var heightVertices = terrainInfo.yVertices();
-		 
-		var widthSegments = widthVertices - 1;
-		var heightSegments = heightVertices - 1;
-
-		var terrainHeight = 200; 
-		var terrainWidth = terrainHeight * terrainInfo.xyVerticesRatio() ; 
 		
-		var scale = {
-		  	x : Math.abs(terrainWidth/(terrainInfo.maxX-terrainInfo.minX)),
-			y : Math.abs(terrainHeight/(terrainInfo.maxY-terrainInfo.minY))  
-		  };
-		scale.z = (scale.x+scale.y)/2 
-		  
-		console.log("Make PlaneGeometry");
-		terrainGeometry = new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);
+		// import3dBuildings.js depends on terrainGeometry to be global. TODO: fix it
+		terrainGeometry = makeFlatTerrainGeometry( terrainInfo );
+
+		var scale = getScale( terrainGeometry, terrainInfo); 
+
+		giveZValuesToGeometry( terrainGeometry, terrain, scale.z );
+
+		var terrainMaterial = makeTerrainMaterial( terrainInfo );
+
+		var terrainMesh = makeTerrainMesh ( terrainGeometry, terrainMaterial );
+
 		
-		
-		var useNorgeIBilder = false;
-		if ( getParameterFromUrl( "norgeIBilder" ) === "true" ) {
-			useNorgeIBilder = true;
-		}
-
-		console.log("Make Material");
-		var material = new THREE.MeshLambertMaterial( {map: getMapTextureWms( bbox, 1000, 1000, useNorgeIBilder )/*, side : THREE.DoubleSide*/ }); 
-		material.wireframe = false;
-
-		console.log("Make Mesh");
-		var terrainMesh = new THREE.Mesh( terrainGeometry, material);
-		terrainMesh.name = "Terrain";
-
-		// add the height values to terrainGeometry
-		console.log("Adding terrain z-values")
-		for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
-							
-			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2]*scale.z;			
-
-		}
 			
 		callback( terrainMesh, terrainInfo, scale );
 
-	}
+	};
 
-	var getMapTextureWms =  function (bbox, width, height, useNorgeIBilder) {
+	var makeFlatTerrainGeometry = function( terrainInfo ) {
+
+		var widthSegments = terrainInfo.xVertices() - 1;
+		var heightSegments = terrainInfo.yVertices() - 1;
 		
-		console.log( "bbox: " + bbox);
-			
+		var terrainHeight = 200; 
+		var terrainWidth = terrainHeight * terrainInfo.xyVerticesRatio(); 
+
+		return new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);	
+	};
+
+	var giveZValuesToGeometry = function ( terrainGeometry, terrain, scaleZ ) {
+		// add the height values to terrainGeometry
+		for ( var i = 0; i < terrainGeometry.vertices.length ; i++)  {
+							
+			terrainGeometry.vertices[i].z = 1*terrain[i].split(" ")[2]*scaleZ;			
+
+		}
+	};
+
+	var makeTerrainMaterial = function( terrainInfo ) {
+		var bbox = terrainInfo.bbox;
+		
+		var wmsName;
+		if ( getParameterFromUrl( "norgeIBilder" ) === "true" ) {
+			wmsName = "wmsGeoNorge";
+		}
+		else {
+			wmsName = "wmsKartverket";
+		}
+
+		return new THREE.MeshLambertMaterial( { map: getMapTextureWms( bbox, 1000, 1000, wmsName ) } ); 
+	};	
+
+	var makeTerrainMesh = function( terrainGeometry, terrainMaterial ) {
+		var terrainMesh = new THREE.Mesh( terrainGeometry, terrainMaterial);
+		terrainMesh.name = "Terrain";
+		return terrainMesh;
+	};
+
+	
+
+	var getScale = function( terrainGeometry, terrainInfo ) {
+		
+		var scale = {
+			x : Math.abs( terrainGeometry.width  / (terrainInfo.maxX - terrainInfo.minX) ),
+			y : Math.abs( terrainGeometry.height / (terrainInfo.maxY - terrainInfo.minY) )  
+		};
+		scale.z = ( scale.x + scale.y )/ 2;
+
+		return scale;
+	};
+
+	var getMapTextureWms =  function (bbox, width, height, wmsName) {
+		
+		// it is quicker to useStoredTexture
 		if ( getParameterFromUrl("useStoredTexture") === "true") {
 			var path = getParameterFromUrl("norgeIBilder") === "true" ? "../assets/textureSat.png" : "../assets/texture.png";
 			return THREE.ImageUtils.loadTexture(path); 
 		}
+		
+		var url = wmsServices.toString( wmsName, bbox, width, height );
 
-		var norgeIBilder = "http://wms.geonorge.no/skwms1/wms.norgeibilder"; // NorgeIBilder	
-		var kartverketOpenWms = "http://openwms.statkart.no/skwms1/wms.topo2";
 		
-		var path = "";
-		var layers = "";
-		
-		console.log("norgeIBilder = " + useNorgeIBilder + " type: " + typeof(useNorgeIBilder));
-		if ( useNorgeIBilder === true ) {
-			console.log("NorgeIBilder");
-			path = norgeIBilder;
-			layers = "OrtofotoAlle";
-		}
-		else {
-			console.log("OpenWms");
-			path = kartverketOpenWms;
-			layers = topo2layers;
-		}
-		
-		path += "?service=wms&version=1.3.0&request=getmap";
-		var crs = "EPSG:32632"; // WGS 84 / UTM zone 32N
-		var srs = "EPSG:32632"; 
-		var format = "image/png";
-		
-		
-		var url = path + '&crs=' + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
-		+ bbox + '&WIDTH=' + width + '&HEIGHT=' + height;
-		
+
 		console.log("texture url: " + url);
 		var imageUtilsCors = THREE.ImageUtils;
 		imageUtilsCors.crossOrigin = 'anonymous'; // From Release 65 of THREE.js this line is necessary
 		
 		return imageUtilsCors.loadTexture(url);
 
-	} 
+	};
 
 	 
 	/*
@@ -187,24 +197,77 @@ function TerrainImporter ( callback ) {
 			"yVertices" : function() {
 				return ( this.maxY - this.minY ) / this.resolutionY + 1 ;
 			}
-		}
+		};
 
 
 
 
 		return dataInfo;
 
-	}
+	};
 
 	this.splitTextFile = function( textFile ) {
 		var textArray =  textFile.replace(/"/g,'').split("\n");
 
 		if (textArray[ textArray.length-1 ] === "") {
-			textArray.pop(); // since the last line in the file "*.xyz" is empty when using importTerrainFile
+			textArray.pop(); // since the last line in the "*.xyz" file is empty
 		}
 
 		return textArray; 
-	}
+	};
+
+	/*
+		Is used by wmsServices and wcsServices as the toString method. It makes 
+		an url based on the wms/wcs information
+	*/
+	var wxsServicesToString = function( name, bbox, width, height ) {
+		var parameter, value; 
+		var url = this[name].baseUrl + "?";
+		var parameters = this[name].parameters;
+		
+		for ( parameter in parameters) {
+			if ( parameters.hasOwnProperty( parameter ) ) {
+				value = parameters[parameter];
+				url = url + parameter + "=" + value + "&";	
+			}
+		}
+		
+		url = url + "bbox" + "=" + bbox + "&";
+		url = url + "width" + "=" + width + "&";
+		url = url + "height" + "=" + height;
+
+		return url;
+		
+	};
+
+	var wmsServices = {
+		wmsKartverket : {
+			baseUrl : 'http://openwms.statkart.no/skwms1/wms.topo2',	
+			parameters : {
+			service : 'wms',
+			version : '1.3.0',
+			request : 'getmap',
+			format : 'image/png',
+			crs : 'EPSG:32632', // UTM32 
+			srs : 'EPSG:32632',  // UTM32
+			layers : topo2layers // in topo2.layers.js 
+			}
+		},
+		wmsGeoNorge : {
+			baseUrl : 'http://wms.geonorge.no/skwms1/wms.norgeibilder',	
+			parameters : {
+			service : 'wms',
+			version : '1.3.0',
+			request : 'getmap',
+			format : 'image/png',
+			crs : 'EPSG:32632', // UTM32 
+			srs : 'EPSG:32632',  // UTM32
+			layers : "OrtofotoAlle" 
+			}
+		},
+		toString : wxsServicesToString
+	};
+
 
 	var wcsServices = { 
 		wcsKartverket : {
@@ -217,31 +280,18 @@ function TerrainImporter ( callback ) {
 			crs : 'EPSG:32632', // UTM32 
 			srs : 'EPSG:32632',  // UTM32
 			coverage : 'land_utm33_10m', // name of layer
-			width : 100, // TODO: a relation between wcs and wms width and height should be added
-			height : 100 
 			}
 		},
-		toString : function( name, bbox ) {
-			var parameter, value; 
-			var url = this[name].baseUrl + "?";
-			var parameters = this[name].parameters;
-			
-			for ( parameter in parameters) {
-				value = parameters[parameter];
-				url = url + parameter + "=" + value + "&";
-			}
-			
-			url = url + "bbox" + "=" + bbox;
-			
-			return url;
-			
-		}
-	}
+		toString : wxsServicesToString
+	};
 
 
-	/*return { 
-		'importTerrainFile' : importTerrainFile, 
-		
-	}; */
+	// method from http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/ 
+	// I'll maybe start to use this method instead of having public methods that should be private
+	/* test-code */
+	//this.__testonly__.<method> = <method>;
+	/* end-test-code */
+
+	
 
 }
