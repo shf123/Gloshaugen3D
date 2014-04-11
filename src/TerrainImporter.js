@@ -1,16 +1,18 @@
 function TerrainImporter ( callback ) {
 
+	var that = this; // need it for the jquery($.get) callback 
 	this.callback = callback;
 
+
 	this.importTerrainFile = function( terrainFilePath ) {
-		loadTextFile( terrainFilePath, xyzLoaded );
+		this.loadTextFile( terrainFilePath, xyzLoaded );
 		
 
 	}
 
 	this.importTerrainWCS = function( wcsName, bbox ) {
 		var url = wcsServices.toString( wcsName, bbox );
-		loadTextFile( url, xyzLoaded );
+		this.loadTextFile( url, xyzLoaded );
 	}
 
 	this.loadTextFile = function( url, callback ) {
@@ -18,10 +20,10 @@ function TerrainImporter ( callback ) {
 	}
 
 	var xyzLoaded = function( data ) {
-		var terrain = splitTextFile( data );
+		var terrain = that.splitTextFile( data );
 
 		
-		var terrainInfo = getDataInfoFromTerrain(terrain);
+		var terrainInfo = that.getDataInfoFromTerrain(terrain);
 		var bbox = terrainInfo.bbox; // "569900,7032300,570500,7033300";
 		var widthVertices = terrainInfo.xVertices();
 		var heightVertices = terrainInfo.yVertices();
