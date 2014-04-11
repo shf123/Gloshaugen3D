@@ -103,7 +103,7 @@ function TerrainImporter ( callback ) {
 		
 		
 		var url = path + '&crs=' + crs + '&srs=' + srs + '&format=' + format + '&layers=' + layers + '&bbox=' 
-		+ bbox + '&WIDTH=' + widthSegments + '&HEIGHT=' + height;
+		+ bbox + '&WIDTH=' + width + '&HEIGHT=' + height;
 		
 		console.log("texture url: " + url);
 		var imageUtilsCors = THREE.ImageUtils;
