@@ -1,25 +1,26 @@
-function TerrainImporter ( scene, callback ) {
-	this.scene = scene;
+function TerrainImporter ( callback ) {
+
 	this.callback = callback;
 
 	this.importTerrainFile = function( terrainFilePath ) {
-
-		$.get( terrainFilePath,  xyzLoaded );
+		loadTextFile( terrainFilePath, xyzLoaded );
+		
 
 	}
 
 	this.importTerrainWCS = function( wcsName, bbox ) {
 		var url = wcsServices.toString( wcsName, bbox );
-		$.get( url,  xyzLoaded );
+		loadTextFile( url, xyzLoaded );
+	}
+
+	this.loadTextFile = function( url, callback ) {
+		$.get( url,  callback );
 	}
 
 	var xyzLoaded = function( data ) {
-		var terrain = data.replace(/"/g,'').split("\n");
+		var terrain = splitTextFile( data );
 
-		if (terrain[ terrain.length-1 ] === "") {
-			terrain.pop(); // since the last line in the file "*.xyz" is empty when using importTerrainFile
-		}
-
+		
 		var terrainInfo = getDataInfoFromTerrain(terrain);
 		var bbox = terrainInfo.bbox; // "569900,7032300,570500,7033300";
 		var widthVertices = terrainInfo.xVertices();
@@ -62,9 +63,7 @@ function TerrainImporter ( scene, callback ) {
 
 		}
 			
-		scene.add( terrainMesh );
-			
-		callback( terrainInfo, scale );
+		callback( terrainMesh, terrainInfo, scale );
 
 	}
 
@@ -117,7 +116,7 @@ function TerrainImporter ( scene, callback ) {
 		Iterates through the terrain array of format: array[i] = "x y z"
 		object containing min values, max values, bbox etc. is returned.
 	*/
-	var getDataInfoFromTerrain = function( terrainArray ) {
+	this.getDataInfoFromTerrain = function( terrainArray ) {
 
 		var i, point, minX, minY, minZ, maxX, maxY, maxZ;
 		var resolutionX, resolutionY; // assumes homogeniously  resolution in X and Y. 
@@ -193,6 +192,16 @@ function TerrainImporter ( scene, callback ) {
 
 		return dataInfo;
 
+	}
+
+	this.splitTextFile = function( textFile ) {
+		var textArray =  textFile.replace(/"/g,'').split("\n");
+
+		if (textArray[ textArray.length-1 ] === "") {
+			textArray.pop(); // since the last line in the file "*.xyz" is empty when using importTerrainFile
+		}
+
+		return textArray; 
 	}
 
 	var wcsServices = { 

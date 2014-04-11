@@ -99,7 +99,7 @@ var addSomeDebugStuffIfDebug = function() {
 }
 
 var addTerrainAndBuildings = function() {
-	var terrainImporter = new TerrainImporter( scene, addBuildingsCallback );
+	var terrainImporter = new TerrainImporter( addBuildingsCallback );
 	
 	if ( getParameterFromUrl('wcs') === "true" ) {
 		var wcsName = "wcsKartverket";
@@ -111,7 +111,8 @@ var addTerrainAndBuildings = function() {
 	}
 }
 
-var addBuildingsCallback =  function( terrainInfo, scale ) {
+var addBuildingsCallback =  function( terrainMesh, terrainInfo, scale ) {
+	scene.add( terrainMesh );
 	addBuildingsToScene( terrainInfo, scale, scene,  render ); // import3dBuildings.js
 }
 
