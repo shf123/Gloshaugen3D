@@ -10,6 +10,8 @@ var init = function() {
 	addScene();
 	addCamera( width, height );
 	addControls();
+	addCollisionDetection();
+
 	addRenderer( width, height );
 	
 	if ( useOculus ) {
@@ -19,12 +21,13 @@ var init = function() {
 	addStats(); 
 	addEventlisteners();
 
+
 	addSomeDebugStuffIfDebug()
 	
 	addTerrainAndBuildings();
 	
-	// testing raycasting with the CollisionDetection file
-	//var collisionDetection = new CollisionDetection( camera, scene );
+	
+	
 	
 }
 
@@ -44,6 +47,10 @@ var addControls = function() {
 	controls.movementSpeed = 0.5;
  	controls.rollSpeed = 0.015;
  	controls.dragToLook = true;
+}
+
+var addCollisionDetection = function() {
+	collisionDetection = new CollisionDetection( camera, scene );
 }
 
 var addRenderer = function( width, height ) {
@@ -124,8 +131,12 @@ var render = function ()  {
 
 	requestAnimationFrame( render );
 
-	controls.update(1); // TODO: Insert diffTime instead of constant
+	// check for collsion here ( before controls )
+	collisionDetection.blockCollidingDirections( "FlyControls", controls ); 
 	
+
+
+	controls.update(1); // TODO: Insert diffTime instead of constant
 	if ( oculus ) {
 		if ( oculusOrientation ) {
 			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
@@ -172,7 +183,7 @@ if ( !Detector.webgl ) {
 	Detector.addGetWebGLMessage();
 }
 
-var scene, camera, renderer, controls, stats, terrainGeometry;
+var scene, camera, renderer, controls, stats, terrainGeometry, collisionDetection;
 var oculus, oculusBridge, oculusOrientation;
 var debugVariable;
 

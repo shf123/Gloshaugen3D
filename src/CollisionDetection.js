@@ -1,11 +1,11 @@
-// Far from finished
+// Strugled with raycasting in all the movement directions -> Instead try to make an invisible
+// shape around the current position instead. This worked
 
-// Will use Raycaster to find objects in the way in the "lookAt"-direction
-// I also want to know which building the mouse pointer is pointing at ( This could be usefull if you
-//	want to show some extra information about an object while hovered. And also if you want to move an object)
+// Can also find out which building the mouse pointer is pointing at ( This could be usefull if you
+// want to show some extra information about an object while hovered. And also if you want to move an object)
+// Maybe finish that later.
 
-// Starts with checking which buiding that is hovered
-// http://threejs.org/examples/#webgl_geometry_terrain_raycast is a good place to look for some tips
+
 
 function CollisionDetection( camera, scene ) {
 
@@ -13,19 +13,16 @@ function CollisionDetection( camera, scene ) {
 	 	
 	 	var raycaster = unprojectMouseCoords ( event.clientX, event.clientY );
 
-	}
+	};
 
 	var mouseclick = function( event ) { 	
 
 		console.log("Mouse click x,y : " + event.clientX + "," + event.clientY );
 	 	var raycaster = unprojectMouseCoords ( event.clientX, event.clientY );
 
-
 	 	//addCubeAtFirstRayIntersection( raycaster );
-	
-		isColliding();
 
-	}
+	};
 
 
 	var unprojectMouseCoords = function( x, y ) {
@@ -44,7 +41,7 @@ function CollisionDetection( camera, scene ) {
 
 		return new THREE.Raycaster ( camera.position,  normalizedDiff );
 
-	}
+	};
 
 	// just for fun and testing
 	var addCubeAtFirstRayIntersection = function ( raycaster ) {
@@ -62,179 +59,114 @@ function CollisionDetection( camera, scene ) {
 	 		console.log("Added cube at: " + mesh.position.x + ", " + mesh.position.y + ", "  + mesh.position.z );
 	 	}
 
-	}
+	};
 
+	// make a shape where each vertex represent a direction to be moved
+	var makeDirectionShape = function() {
 
-	// not finished yet
-	glob = undefined;
-	var isColliding = function() {
+		var shapeSize = 5;
+
+		// vertices: 0-right, 1-left, 2-up, 3-down, 4-back, 5-forward
+		var directionShape = new THREE.OctahedronGeometry( shapeSize );
+		var directionMaterial = new THREE.MeshBasicMaterial();
+		var directionMesh = new THREE.Mesh( directionShape, directionMaterial );
+		
+		// follow the camera
+		directionMesh.position = camera.position;
+		directionMesh.rotation = camera.rotation;
+
+		return directionMesh;
+
+	};
+
+	var isColliding = function( minDistanceValue ) {
 		var i, dirVector;
 
 
-		var dirVectors = [];
-		glob = dirVectors;
-
-		dirVectors.push(  new THREE.Vector3(  0,  0,  1 ) ); // up
-		dirVectors.push(  new THREE.Vector3(  0,  0, -1 ) ); // down
-		dirVectors.push(  new THREE.Vector3(  1,  0,  0 ) ); // right
-		dirVectors.push(  new THREE.Vector3( -1,  0,  0 ) ); // left
-		dirVectors.push(  new THREE.Vector3(  0,  1,  0 ) ); // forward
-		dirVectors.push(  new THREE.Vector3(  0, -1,  0 ) ); // back
-
 		var projector = new THREE.Projector();
-		var raycasters = new Array( dirVectors.length );
+		var numberOfDirections = directionMesh.geometry.vertices.length;
+		var raycasters = new Array( numberOfDirections );
+
+			
+		var collitionDirections = [];
+
+		for ( i = 0; i < numberOfDirections; i++ ) {
+			
+			var localPoint = directionMesh.geometry.vertices[i].clone();
+	 		var globalPoint = localPoint.applyMatrix4( camera.matrix );
+
+	 		var directionVector = globalPoint.clone().sub( camera.position ).normalize();
+
+			raycasters[i] = new THREE.Raycaster( camera.position, directionVector );
+			var intersections = raycasters[i].intersectObjects( scene.children, true );
+
+			if (intersections.length > 0 && intersections[0].distance <  minDistanceValue ) {
+				collitionDirections.push( i );
+			}
+
+		}
 
 
-		// first vector
-		dirVector = dirVectors[0];
-		projector.unprojectVector( dirVector, camera );
-		dirVector.sub( camera.position ).normalize(); 
-		raycasters[0] = new THREE.Raycaster( camera.position, dirVector );
+		return collitionDirections;
 
-		var intersections = raycasters[0].intersectObjects( scene.children, true );
+	};
+
+
+	this.blockCollidingDirections = function( controllName, controls) {
 		
-		// debug locate intersection
-		if ( intersections.length > 0 ) {
-			var geom = new THREE.CubeGeometry(1,1,1);
-			var color = '#ff0000';
-	 		var mat = new THREE.MeshBasicMaterial({ 'color':  color }); 
-	 		var mesh = new THREE.Mesh( geom, mat );
-	 		mesh.position = intersections[0].point;
-	 		
-	 		scene.add(mesh);
-
-		}
-		console.log( intersections );
-
-
-		// the rest of the vectors
-		for ( i = 1; i < dirVectors.length; i++ ) {
-			
-			dirVector = dirVectors[0].clone();
-			var xAxis = new THREE.Vector3( 1, 0, 0 );
-			var yAxis = new THREE.Vector3( 0, 1, 0 );
-			var zAxis = new THREE.Vector3( 0, 0, 1 );
-			
-			
-			switch(i) {
-					case 1: // backwards?
-						var matrix = new THREE.Matrix4().makeRotationAxis( xAxis, Math.PI);
-						dirVector.applyMatrix4( matrix );
-						break;
-					case 2: // left?
-						var matrix = new THREE.Matrix4().makeRotationAxis( zAxis, Math.PI);
-						dirVector.applyMatrix4( matrix );
-						break;
-					case 3: // right?
-						var matrix = new THREE.Matrix4().makeRotationAxis( zAxis, 3*Math.PI/2);
-						dirVector.applyMatrix4( matrix );
-						break;
-					case 4:
-						var matrix = new THREE.Matrix4().makeRotationAxis( yAxis, Math.PI/2);
-						dirVector.applyMatrix4( matrix );
-						break;
-					case 5:
-						var matrix = new THREE.Matrix4().makeRotationAxis( yAxis, 3*Math.PI/2);
-						dirVector.applyMatrix4( matrix );
-						break;
-								
-			}
-
-
-
-
-			raycasters[i] = new THREE.Raycaster( camera.position, dirVector );
-			var intersections = raycasters[i].intersectObjects( scene.children, true );
-			
-			// debug locate intersection
-			if ( intersections.length > 0 ) {
-				var geom = new THREE.CubeGeometry(1,1,1);
-				var color;
-				switch(i) {
-					case 0:
-						color = '#ff0000';
-						break;
-					case 1:
-						color = '#880000';
-						break;
-					case 2:
-						color = '#00ff00';
-						break;
-					case 3:
-						color = '#008800';
-						break;
-					case 4:
-						color = '#0000ff';
-						break;
-					case 5:
-						color = '#000088';
-						break;
-								
-				}
-
-		 		var mat = new THREE.MeshBasicMaterial({ 'color':  color }); 
-
-		 		var mesh = new THREE.Mesh( geom, mat );
-		 		mesh.position = intersections[0].point;
-		 		
-		 		scene.add(mesh);
-			}
-			console.log( intersections );
+		switch(	controllName ) {
+			case "FlyControls":
+				blockCollidingDirectionsForFlyControls ( controls );
+				break;
+			default:
+				throw new Error("blockCollidingDirection is not supported for " + controllName + "!");
 
 		}
 
-		/*
-		for ( i = 0; i < dirVectors.length; i++ ) {
-			
-			dirVector = dirVectors[i];
-			projector.unprojectVector( dirVector, camera );
-			dirVector.sub( camera.position ).normalize(); 
-			raycasters[i] = new THREE.Raycaster( camera.position, dirVector );
-			var intersections = raycasters[i].intersectObjects( scene.children, true );
-			
-			// debug locate intersection
-			if ( intersections.length > 0 ) {
-				var geom = new THREE.CubeGeometry(1,1,1);
-				var color;
-				switch(i) {
-					case 0:
-						color = '#ff0000';
-						break;
-					case 1:
-						color = '#880000';
-						break;
-					case 2:
-						color = '#00ff00';
-						break;
-					case 3:
-						color = '#008800';
-						break;
-					case 4:
-						color = '#0000ff';
-						break;
-					case 5:
-						color = '#000088';
-						break;
-								
-				}
+		
 
-		 		var mat = new THREE.MeshBasicMaterial({ 'color':  color }); 
+	};
 
-		 		var mesh = new THREE.Mesh( geom, mat );
-		 		mesh.position = intersections[0].point;
-		 		
-		 		scene.add(mesh);
+	var blockCollidingDirectionsForFlyControls = function ( controls ) {
+		var collitionDirections = isColliding( 1 );
+
+		for (var i = 0; i < collitionDirections.length; i++) {
+			var collitionDirection = collitionDirections[i];
+
+			// sets moveVector for x, y and/or z to 0 if necessary to avoid colliding in a object
+			switch(collitionDirection) {
+				case 0: // right
+					controls.moveVector.x = Math.min(0, controls.moveVector.x); 
+					break;
+				case 1: // left
+					controls.moveVector.x = Math.max(0, controls.moveVector.x);
+					break;
+				case 2: // up
+					controls.moveVector.y = Math.min(0, controls.moveVector.y);
+					break;
+				case 3: // down
+					controls.moveVector.y = Math.max(0, controls.moveVector.y);
+					break;
+				case 4: // back
+					controls.moveVector.z = Math.min(0, controls.moveVector.z);
+					break;
+				case 5: // forward
+					controls.moveVector.z = Math.max(0, controls.moveVector.z);
+					break;
+
 			}
-			console.log( intersections );
 
-		}*/
+		};
 
 
-	}
+
+	};
+
+	var directionMesh = makeDirectionShape();
 
 	// add mouse listener
 	//window.addEventListener( 'mousemove', mousemove, false);
-	window.addEventListener('click', mouseclick, false);
+	//window.addEventListener('click', mouseclick, false);
 }
 
 
