@@ -79,16 +79,13 @@ function CollisionDetection( camera, scene ) {
 
 	};
 
-	var isColliding = function( minDistanceValue ) {
+	var getDirectionsWithCollision = function( minDistanceValue ) {
 		var i, dirVector;
 
-
-		var projector = new THREE.Projector();
 		var numberOfDirections = directionMesh.geometry.vertices.length;
 		var raycasters = new Array( numberOfDirections );
-
 			
-		var collitionDirections = [];
+		var collisionDirections = [];
 
 		for ( i = 0; i < numberOfDirections; i++ ) {
 			
@@ -101,15 +98,31 @@ function CollisionDetection( camera, scene ) {
 			var intersections = raycasters[i].intersectObjects( scene.children, true );
 
 			if (intersections.length > 0 && intersections[0].distance <  minDistanceValue ) {
-				collitionDirections.push( i );
+				collisionDirections.push( i );
+
 			}
 
 		}
 
+		var directionsText = mapIntegerDirectionsToText( collisionDirections );
 
-		return collitionDirections;
+		return directionsText;
 
 	};
+
+	var mapIntegerDirectionsToText = function( collisionDirections ) {
+
+		var numberToDirectionMap = {
+			 0: 'right', 
+			 1: 'left', 
+			 2: 'up', 
+			 3: 'down', 
+			 4: 'back', 
+			 5: 'forward'
+		};
+
+		return collisionDirections.map( function( num ){ return numberToDirectionMap[num]; } );
+	}
 
 
 	this.blockCollidingDirections = function( controllName, controls) {
@@ -128,31 +141,33 @@ function CollisionDetection( camera, scene ) {
 	};
 
 	var blockCollidingDirectionsForFlyControls = function ( controls ) {
-		var collitionDirections = isColliding( 1 );
+		var collisionDirections = getDirectionsWithCollision( 1 );
 
-		for (var i = 0; i < collitionDirections.length; i++) {
-			var collitionDirection = collitionDirections[i];
+		for (var i = 0; i < collisionDirections.length; i++) {
+			var collitionDirection = collisionDirections[i];
 
 			// sets moveVector for x, y and/or z to 0 if necessary to avoid colliding in a object
 			switch(collitionDirection) {
-				case 0: // right
+				case "right": // right
 					controls.moveVector.x = Math.min(0, controls.moveVector.x); 
 					break;
-				case 1: // left
+				case "left": // left
 					controls.moveVector.x = Math.max(0, controls.moveVector.x);
 					break;
-				case 2: // up
+				case "up": // up
 					controls.moveVector.y = Math.min(0, controls.moveVector.y);
 					break;
-				case 3: // down
+				case "down": // down
 					controls.moveVector.y = Math.max(0, controls.moveVector.y);
 					break;
-				case 4: // back
+				case "back": // back
 					controls.moveVector.z = Math.min(0, controls.moveVector.z);
 					break;
-				case 5: // forward
+				case "forward": // forward
 					controls.moveVector.z = Math.max(0, controls.moveVector.z);
 					break;
+				default:
+					throw new Error("Unknown direction: " + collitionDirection );
 
 			}
 
@@ -167,6 +182,14 @@ function CollisionDetection( camera, scene ) {
 	// add mouse listener
 	//window.addEventListener( 'mousemove', mousemove, false);
 	//window.addEventListener('click', mouseclick, false);
+
+
+
+	// method from http://philipwalton.com/articles/how-to-unit-test-private-functions-in-javascript/ 
+	/* test-code */
+	this.__testonly__ = {};
+	this.__testonly__.getDirectionsWithCollision = getDirectionsWithCollision;
+	/* end-test-code */
 }
 
 
