@@ -6,99 +6,130 @@ var init = function() {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
 
-	// scene 
-	scene = new THREE.Scene();
 
-	// camera (chose FOV from stemkoski.github.io/Three.js/HelloWorld.html)
-	camera = new THREE.PerspectiveCamera( 45, width/height, 0.1, 10000 );
-	camera.position.z = 12;
-	camera.rotation.x = Math.PI / 2;
+
+	addScene();
+	addCamera( width, height );
+	addControls();
+	addCollisionDetection();
+
+	addRenderer( width, height );
 	
+	if ( useOculus ) {
+		addOculus();
+	}
+
+	addStats(); 
+	addEventlisteners();
 
 
-	// controls
+	addSomeDebugStuffIfDebug()
+
+	
+	addTerrainAndBuildings();
+	
+	
+	
+	
+}
+
+var addScene = function() {
+	scene = new THREE.Scene();	
+	scene.add( new THREE.AmbientLight( 0xababab ) );
+}
+
+var addCamera = function( width, height ) {
+	camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 );
+	camera.position.z = 12; // TODO: Less hardcoded
+	camera.rotation.x = Math.PI / 2;
+}
+
+var addControls = function() {
 	controls = new THREE.FlyControls( camera );
 	controls.movementSpeed = 0.5;
  	controls.rollSpeed = 0.015;
  	controls.dragToLook = true;
 
-	// renderer
+}
+
+var addCollisionDetection = function() {
+	collisionDetection = new CollisionDetection( camera, scene );
+}
+
+
+var addRenderer = function( width, height ) {
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( width, height );
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
-	
-	// use oculus rift?
-	if ( useOculus ) {
-		var oculusOrientationChanged = function ( quat ) {
-			oculusOrientation = quat;
-		}
+}
 
-		oculus = new THREE.OculusRiftEffect(renderer);
-		oculusBridge = new OculusBridge( {"onConnect" : function() { 
-			        console.log("oculus is connected");
-			    },
-			    "onDisconnect" : function() {
-			        console.log("oculus is disconnected");
-			    },
-			    "onOrientationUpdate" : oculusOrientationChanged
-				});
-		oculusBridge.connect();
+var addOculus = function() {
 
+	var oculusOrientationChanged = function ( quat ) {
+		oculusOrientation = quat;
 	}
 
+	oculus = new THREE.OculusRiftEffect(renderer); // oculus renderer
+	oculusBridge = new OculusBridge( {"onConnect" : function() { 
+		        console.log("oculus is connected");
+		    },
+		    "onDisconnect" : function() {
+		        console.log("oculus is disconnected");
+		    },
+		    "onOrientationUpdate" : oculusOrientationChanged
+			});
 
-	// initilize stats
+	oculusBridge.connect();
+}
+
+var addStats = function() {
 	stats = new Stats();
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.top = '0px';
 	stats.domElement.style.right = '0px';
 	document.body.appendChild( stats.domElement );
-	
-	// terrain. 
-	var runAfterTerrainIsImported =  function( terrainInfo, scale ) {
-		addBuildingsToScene( terrainInfo, scale, scene,  function() {
-			render();
-		}); // import3dBuildings.js
-	}
-	importTerrain( scene, runAfterTerrainIsImported ); // importTerrain.js
-	
-
-	// add start position object
-	var geometry = new THREE.CubeGeometry( 3,3,3 );
-	var material = new THREE.MeshBasicMaterial();
-	var mesh = new  THREE.Mesh( geometry, material );
-	mesh.position.z = 23;
+}
 
 
+var addEventlisteners = function() {
+	window.addEventListener('resize', onResize, false);
+}
 
 
-
-	
-	// light
-	var light = new THREE.AmbientLight( 0xababab ) ;
-	light.position = camera.position;
-	scene.add( light );
-
-	var light2 = new THREE.DirectionalLight( 0x444444 );
-	light2.position = camera.position;
-	scene.add( light2 );
-	
-
-	// Debug geometries
-	// create axis helper (for debugging)
+var addSomeDebugStuffIfDebug = function() {
 	if (debug) {
-		var axisHelper = new THREE.AxisHelper( 500 );
+		// XYZ-axis
+		var axisHelper = new THREE.AxisHelper( 500 ); 
 		scene.add( axisHelper );
 		
-		gridHelper = new THREE.GridHelper( 150,10 );
+		// Grid below the terrain
+		var gridHelper = new THREE.GridHelper( 150,10 );
 		gridHelper.setColors( 0x888822, 0x888888 );
 		gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
 		scene.add(gridHelper);
 
 	}
-	
-	
 }
+
+var addTerrainAndBuildings = function() {
+	var terrainImporter = new TerrainImporter( addBuildingsCallback );
+	
+	if ( getParameterFromUrl('wcs') === "true" ) {
+		var wcsName = "wcsKartverket";
+		var bbox = "569900,7032300,570500,7033300";
+		terrainImporter.importTerrainWCS( wcsName, bbox );
+	}
+	else {
+		terrainImporter.importTerrainFile( "../assets/gloshaugen.xyz" );
+	}
+}
+
+var addBuildingsCallback =  function( terrainMesh, terrainInfo, scale ) {
+	scene.add( terrainMesh );
+	addBuildingsToScene( terrainInfo, scale, scene,  render ); // import3dBuildings.js
+}
+
+
 
 var render = function ()  {
 
@@ -106,8 +137,12 @@ var render = function ()  {
 
 	requestAnimationFrame( render );
 
-	controls.update(1);
+	// check for collsion here ( before controls )
+	collisionDetection.blockCollidingDirections( "FlyControls", controls ); 
 	
+
+
+	controls.update(1); // TODO: Insert diffTime instead of constant
 	if ( oculus ) {
 		if ( oculusOrientation ) {
 			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
@@ -126,6 +161,13 @@ var render = function ()  {
 	return;
 };
 
+var onResize = function ( event ) {
+		camera.aspect =  window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+
+		renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
 
 // Returns value of parameter if it exist. 
 var getParameterFromUrl = function( parameter ) {
@@ -142,20 +184,20 @@ var getParameterFromUrl = function( parameter ) {
 	return undefined;
 }
 
-var scene, camera, renderer, controls, stats;
-var debug = getParameterFromUrl("debug") || false; // show some debug info
+// Check webgl
+if ( !Detector.webgl ) {
+	Detector.addGetWebGLMessage();
+}
 
-var oculus = null;
-var oculusBridge = null;
-var oculusOrientation = null;
+var scene, camera, renderer, controls, stats, terrainGeometry, collisionDetection;
+var oculus, oculusBridge, oculusOrientation;
+var debugVariable;
+
+var debug = getParameterFromUrl("debug") || false; // show some debug info
 var useOculus = getParameterFromUrl("oculus") === "true" ;
 
-
-
-var debugVariable;
-var terrainGeometry;
-
 init();
+
 
 
 
