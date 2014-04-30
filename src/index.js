@@ -26,6 +26,7 @@ var init = function() {
 	
 	addTerrainAndBuildings();
 	
+	handlePotensiallyGivenFlythroughParameters();
 	
 	
 	
@@ -123,6 +124,20 @@ var addBuildingsCallback =  function( terrainMesh, terrainInfo, scale ) {
 	addBuildingsToScene( terrainInfo, scale, scene,  render ); // import3dBuildings.js
 }
 
+var handlePotensiallyGivenFlythroughParameters = function() {
+	var flyThroughRecording = getParameterFromUrl("record") === "true";
+	var flyThrough = getParameterFromUrl("fly") === "true";
+
+	if ( flyThrough ) {
+		var useRotations = true;
+		flyThroughPositions( camera, hardCodedRecording, controls, useRotations );
+	}
+	else if ( flyThroughRecording ) {
+		var waitTimeBetweenRecordings = 50; // ms
+		var totalRecordTime = 5000; // ms
+		recordPositions( camera, 50, 5000 ); 
+	}
+}
 
 
 var render = function ()  {
@@ -189,6 +204,7 @@ var debugVariable;
 
 var debug = getParameterFromUrl("debug") || false; // show some debug info
 var useOculus = getParameterFromUrl("oculus") === "true" ;
+
 
 init();
 
