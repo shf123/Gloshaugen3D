@@ -128,9 +128,13 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 	var flyThroughRecording = getParameterFromUrl("record") === "true";
 	var flyThrough = getParameterFromUrl("fly") === "true";
 
+
 	if ( flyThrough ) {
 		var useRotations = true;
-		flyThroughPositions( camera, hardCodedRecording, controls, useRotations );
+		var recordingName = getParameterFromUrl("recordingName") || "flythrough.txt";
+		var recordingPath = "../assets/flyThroughRecordings/" + recordingName;
+		flyThroughPositionsFromFile( recordingPath, camera, controls, useRotations)
+		//flyThroughPositions( camera, hardCodedRecording, controls, useRotations );
 	}
 	else if ( flyThroughRecording ) {
 		var waitTimeBetweenRecordings = 50; // ms
