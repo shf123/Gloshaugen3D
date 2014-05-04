@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Folder>
+	<name>SUPreview2</name>
+	<description><![CDATA[Created with <a href="http://sketchup.google.com/">Google SketchUp 6.0.515</a>]]></description>
+	<LookAt>
+		<longitude>10.40662945243841</longitude>
+		<latitude>63.41866024101469</latitude>
+		<altitude>281.879212928778</altitude>
+		<range>0.1</range>
+		<tilt>19.3779</tilt>
+		<heading>232.953</heading>
+	</LookAt>
+	<Folder>
+		<name>Tour</name>
+		<Placemark>
+			<name>Camera</name>
+			<LookAt>
+				<longitude>10.40662945243841</longitude>
+				<latitude>63.41866024101469</latitude>
+				<altitude>281.879212928778</altitude>
+				<range>0.1</range>
+				<tilt>19.3779</tilt>
+				<heading>232.953</heading>
+			</LookAt>
+		</Placemark>
+	</Folder>
+	<Placemark>
+		<name>Model</name>
+		<Style id="default">
+		</Style>
+		<Model id="model_2">
+			<altitudeMode>relativeToGround</altitudeMode>
+			<Location>
+				<longitude>10.404361015277</longitude>
+				<latitude>63.41853446031</latitude>
+				<altitude>0</altitude>
+			</Location>
+			<Orientation>
+				<heading>0</heading>
+				<tilt>0</tilt>
+				<roll>0</roll>
+			</Orientation>
+			<Scale>
+				<x>1</x>
+				<y>1</y>
+				<z>1</z>
+			</Scale>
+			<Link>
+				<href>files/SUPreview2.dae</href>
+			</Link>
+		</Model>
+	</Placemark>
+	<DocumentSource>SketchUp</DocumentSource>
+</Folder>
+</kml>

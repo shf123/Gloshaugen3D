@@ -3,7 +3,7 @@ rem Overwrite/make index.html to show all the files in list of directories
 rem This is made since Github pages does not have directory listing
 
 set htmlName=fileList.html
-set directoryList=(.\dae\ .\obj\. .\js\)
+set directoryList=(.\dae\ .\obj\ .\js\)
 echo %directoryList%
 
 rem ENABLEDELAYEDEXPANSION seem to be necessary to get the expected result for the value htmlFilePath
