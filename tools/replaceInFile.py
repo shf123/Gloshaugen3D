@@ -12,10 +12,11 @@ def replaceInFiles(files, replacements):
 	for file in files:
 		
 		infile = open(file, 'r')
-		outfile = open(file, 'r+') # 'w' instead of 'r+' did not work
-
+		everyLine = infile.readlines()
+		outfile = open(file, 'w')
+		
 		# iterate lines in infile
-		for line in infile:
+		for line in everyLine:
 			# iterate replacements dictionary 
 			for key, value in replacements.iteritems():
 				line = line.replace(key, value)
@@ -23,6 +24,7 @@ def replaceInFiles(files, replacements):
 
 		infile.close()
 		outfile.close()
+
 
 if __name__ == '__main__':
 	
