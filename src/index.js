@@ -133,8 +133,7 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 		var useRotations = true;
 		var recordingName = getParameterFromUrl("recordingName") || "flythrough.txt";
 		var recordingPath = "../assets/flyThroughRecordings/" + recordingName;
-		flyThroughPositionsFromFile( recordingPath, camera, controls, useRotations)
-		//flyThroughPositions( camera, hardCodedRecording, controls, useRotations );
+		flyThroughPositionsFromFile( recordingPath, camera, useRotations)
 	}
 	else if ( flyThroughRecording ) {
 		var waitTimeBetweenRecordings = 50; // ms
