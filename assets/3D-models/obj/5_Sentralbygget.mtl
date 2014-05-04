@@ -1,0 +1,461 @@
+# Blender MTL File: 'None'
+# Material Count: 46
+
+newmtl Brick_Pavers_ModularnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\Brick_Pavers_ModularnoCulling.jpg
+
+newmtl Cladding_Siding_WhitenoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\Cladding_Siding_WhitenoCulling.jpg
+
+newmtl Concrete_Pavers_Block_MultinoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\Concrete_Pavers_Block_MultinoCulling.jpg
+
+newmtl FrontColorNoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Roofing_Slate_DarknoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\Roofing_Slate_DarknoCulling.jpg
+
+newmtl Stone_Vein_GraynoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\Stone_Vein_GraynoCulling.jpg
+
+newmtl bakkjemi_noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bakkjemi_noCulling.jpg
+
+newmtl bilnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bilnoCulling.jpg
+
+newmtl bormidtnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bormidtnoCulling.jpg
+
+newmtl bro1noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bro1noCulling.jpg
+
+newmtl bro2noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bro2noCulling.jpg
+
+newmtl bro3noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bro3noCulling.jpg
+
+newmtl bro4noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bro4noCulling.jpg
+
+newmtl brokjeminoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\brokjeminoCulling.jpg
+
+newmtl bronordmidtnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bronordmidtnoCulling.jpg
+
+newmtl bronordnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\bronordnoCulling.jpg
+
+newmtl brosornoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\brosornoCulling.jpg
+
+newmtl darlinoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\darlinoCulling.jpg
+
+newmtl goshaugern_046noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\goshaugern_046noCulling.jpg
+
+newmtl hoyblokk4reralnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\hoyblokk4reralnoCulling.jpg
+
+newmtl hoyblokkteksturnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\hoyblokkteksturnoCulling.jpg
+
+newmtl hoyblokkvindunoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\hoyblokkvindunoCulling.jpg
+
+newmtl hoynordnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\hoynordnoCulling.jpg
+
+newmtl hoysydnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\hoysydnoCulling.jpg
+
+newmtl kjemifremnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\kjemifremnoCulling.jpg
+
+newmtl kjemifremtoppnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\kjemifremtoppnoCulling.jpg
+
+newmtl kjemiteknoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\kjemiteknoCulling.jpg
+
+newmtl kjmnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\kjmnoCulling.jpg
+
+newmtl midtbygg
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midtbygg.jpg
+
+newmtl midtbygg1noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midtbygg1noCulling.jpg
+
+newmtl midtnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midtnoCulling.jpg
+
+newmtl midttekstur
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midttekstur.jpg
+
+newmtl midttekstur1noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midttekstur1noCulling.jpg
+
+newmtl midttekstur2noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\midttekstur2noCulling.jpg
+
+newmtl nordmidt1noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\nordmidt1noCulling.jpg
+
+newmtl nordmidtnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\nordmidtnoCulling.jpg
+
+newmtl nordnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\nordnoCulling.jpg
+
+newmtl oldkjemivestnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\oldkjemivestnoCulling.jpg
+
+newmtl rodinngannoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\rodinngannoCulling.jpg
+
+newmtl rullestolnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\rullestolnoCulling.jpg
+
+newmtl sessebnnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\sessebnnoCulling.jpg
+
+newmtl sorbyggnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\sorbyggnoCulling.jpg
+
+newmtl syd1noCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\syd1noCulling.jpg
+
+newmtl sydsotnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\sydsotnoCulling.jpg
+
+newmtl sydvestnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\sydvestnoCulling.jpg
+
+newmtl tedfnoCulling
+Ns 37.254902
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.165000 0.165000 0.165000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 5_Sentralbygget\\tedfnoCulling.jpg
