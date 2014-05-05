@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 
 rem dependencies: 7-zip need to be installed and added to the path(7z.exe is used in this program),
 rem blender, blender-plugin for exporting the to js, and python
@@ -51,7 +51,9 @@ for %%f in (*.kmz) do (
 		move "%daeFolder1%\%daeFileName1%" "%commonDaeFolder%\%fileName%.dae"
 	
 		rem "move and rename untitled(image folder)" 
-		move "%imageFolder1%" "%commonDaeFolder%\%fileName%" 
+		mkdir "%commonDaeFolder%\%fileName%" 
+		move "%imageFolder1%\*" "%commonDaeFolder%\%fileName%" 
+		pause
 
 		rem "the images-path inside the dae-file needs to be changed"
 		echo replaceInFile.py --files "%commonDaeFolder%\%fileName%.dae"  --findReplace "%imageFolder1Name%/" "%fileName%/"
@@ -83,7 +85,9 @@ for %%f in (*.kmz) do (
 	move "%commonDaeFolder%\%fileName%.js" "%commonJsFolder%\%fileName%.js"
 	xcopy "%commonDaeFolder%\%fileName%" "%commonObjFolder%\%fileName%" /i
 	xcopy "%commonDaeFolder%\%fileName%" "%commonJsFolder%\%fileName%" /i
-
+	rem change ambient light parameter in mtl file
+	replaceInFile.py --files "%commonObjFolder%\%fileName%.mtl"  --findReplace "Ka 0.000000 0.000000 0.000000" "Ka 0.900000 0.900000 0.900000"
+	
 	rem remove the rests of the unzipped kmz-file. 
 	rem /S is used to remove all the content in the folder and /Q to not be prompted before deleting
 	rmdir /S /Q "%fileName%" 
