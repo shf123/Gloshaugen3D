@@ -38,6 +38,10 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 		case "debug":
 			addDebugGeometriesToScene( terrainInfo, scale, scene, whenFinished); 
 			return;
+		case "none":
+			console.log("Buildings is chosen to not be imported");
+			whenFinished();
+			return;
 		default:
 			objtype = "dae";
 			loader = loadDaeBuilding;
