@@ -41,7 +41,10 @@ var addScene = function() {
 
 var addCamera = function( width, height ) {
 	camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 );
-	camera.position.z = 12; // TODO: Less hardcoded
+	camera.position.x = getParameterFromUrl("x")*1 || 10;
+	camera.position.y = getParameterFromUrl("y")*1 || 0;
+	camera.position.z = getParameterFromUrl("z")*1 || 12; // TODO: Less hardcoded
+	
 	camera.rotation.x = Math.PI / 2;
 }
 
@@ -164,7 +167,7 @@ var render = function ()  {
 	if ( oculus ) {
 		if ( oculusOrientation ) {
 			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
-			camera.quaternion.set(oculusOrientation.x, oculusOrientation.z, oculusOrientation.y, oculusOrientation.w);
+			camera.quaternion.set(oculusOrientation.x, -oculusOrientation.z, oculusOrientation.y, oculusOrientation.w);
 			camera.rotateX(Math.PI/2); // Change angle so it gets more natural
 
 		}

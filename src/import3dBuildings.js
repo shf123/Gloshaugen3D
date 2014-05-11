@@ -38,6 +38,10 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 		case "debug":
 			addDebugGeometriesToScene( terrainInfo, scale, scene, whenFinished); 
 			return;
+		case "none":
+			console.log("Buildings is chosen to not be imported");
+			whenFinished();
+			return;
 		default:
 			objtype = "dae";
 			loader = loadDaeBuilding;
@@ -52,6 +56,11 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 		
 			var whenFinishedJson = function( geometry, materials) {
 				geometry.computeVertexNormals(); // necessary for collision detection and raycasting
+
+				// some buildings only shows a wall from the inside. fixes this by specifying double side
+				for (var i = 0; i < materials.length; i++) {
+					materials[i].side = THREE.DoubleSide;
+				};
 
 				var material = new THREE.MeshFaceMaterial( materials );
 				var object = new THREE.Mesh(geometry, material );
@@ -78,6 +87,9 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 				for ( j = 0; j < object.children.length; j++ ) {
 					var aMesh = object.children[j].children[0];
 					aMesh.geometry.computeVertexNormals();
+
+					// some buildings only shows a wall from the inside. fixes this by specifying double side
+					aMesh.material.side = THREE.DoubleSide;
 				}
 
 				whenFinished( object );

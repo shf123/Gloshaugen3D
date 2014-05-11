@@ -9,6 +9,8 @@
 
 function CollisionDetection( camera, scene ) {
 
+	var inactive = getParameterFromUrl("collision") === "off";
+
 	var mousemove = function( event ) {
 	 	
 	 	var raycaster = unprojectMouseCoords ( event.clientX, event.clientY );
@@ -127,6 +129,10 @@ function CollisionDetection( camera, scene ) {
 
 	this.blockCollidingDirections = function( controllName, controls) {
 		
+		if ( inactive ) {
+			return;
+		}
+
 		switch(	controllName ) {
 			case "FlyControls":
 				blockCollidingDirectionsForFlyControls ( controls );
@@ -135,8 +141,6 @@ function CollisionDetection( camera, scene ) {
 				throw new Error("blockCollidingDirection is not supported for " + controllName + "!");
 
 		}
-
-		
 
 	};
 
