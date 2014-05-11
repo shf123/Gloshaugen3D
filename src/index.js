@@ -39,7 +39,10 @@ var addScene = function() {
 
 var addCamera = function( width, height ) {
 	camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 );
-	camera.position.z = 12; // TODO: Less hardcoded
+	camera.position.x = getParameterFromUrl("x")*1 || 10;
+	camera.position.y = getParameterFromUrl("y")*1 || 0;
+	camera.position.z = getParameterFromUrl("z")*1 || 12; // TODO: Less hardcoded
+	
 	camera.rotation.x = Math.PI / 2;
 }
 
