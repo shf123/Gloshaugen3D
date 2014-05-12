@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<kml xmlns='http://earth.google.com/kml/2.1'>
+<Folder>
+    <name>Gruppe 7 - Kjemiblokkene SKP_oppretta_3</name>
+    <description><![CDATA[Created with <a href="http://sketchup.google.com/">Google SketchUp 6.0.515</a>]]></description>
+    <DocumentSource>SketchUp</DocumentSource>
+<visibility>1</visibility>
+<LookAt>
+<heading>159.872</heading>
+<tilt>79.57</tilt>
+<latitude>63.41831304912235</latitude>
+<longitude>10.40342623027967</longitude>
+<range>35.10442070209583</range>
+<altitude>6.426188559178736</altitude>
+</LookAt>
+<Folder>
+<name>Tour</name>
+<Placemark>
+<name>Camera</name>
+<visibility>1</visibility>
+<LookAt>
+<heading>159.872</heading>
+<tilt>79.57</tilt>
+<latitude>63.41831304912235</latitude>
+<longitude>10.40342623027967</longitude>
+<range>35.10442070209583</range>
+<altitude>6.426188559178736</altitude>
+</LookAt>
+</Placemark>
+</Folder>
+  <Placemark>
+    <name>Model</name>
+    <description><![CDATA[]]></description>
+    <Style id='default'>
+    </Style>
+    <Model>
+        <altitudeMode>relativeToGround</altitudeMode>
+        <Location>
+            <longitude>10.405238601892</longitude>
+            <latitude>63.416239558494</latitude>
+            <altitude>0.000000000000</altitude>
+        </Location>
+        <Orientation>
+            <heading>0</heading>
+            <tilt>0</tilt>
+            <roll>0</roll>
+        </Orientation>
+        <Scale>
+            <x>1.0</x>
+            <y>1.0</y>
+            <z>1.0</z>
+        </Scale>
+        <Link>
+            <href>models/Gruppe 7 - Kjemiblokkene SKP_oppretta_3.dae</href>
+        </Link>
+    </Model>
+  </Placemark></Folder>
+</kml>
