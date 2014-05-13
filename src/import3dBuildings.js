@@ -62,7 +62,15 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 					materials[i].side = THREE.DoubleSide;
 				};
 
-				var material = new THREE.MeshFaceMaterial( materials );
+
+				// render buildings without the image texture, to compare performance
+				if (getParameterFromUrl("greyBuildingColors") === "true" ) {
+					var material = new THREE.MeshBasicMaterial( { color:'#555555', face:THREE.DoubleSide }); 
+				}
+				else {
+					var material = new THREE.MeshFaceMaterial( materials );
+				}	
+				
 				var object = new THREE.Mesh(geometry, material );
 				whenFinished ( object );
 			}
@@ -234,7 +242,12 @@ var loadJsonBuilding = function( url, callback)  {
 	var jsonLoader = new THREE.JSONLoader();
 
 	// give folder path: 
-	var textureFolderPath = url.replace(".js","") + "/";	
+	var textureFolderPath = url.replace(".js","") + "/";
+
+	if ( getParameterFromUrl("shrinked") === "true" ) {
+		textureFolderPath = textureFolderPath + "shrinked/";
+	}
+
 	console.log("folder: " + textureFolderPath); 
 
 	jsonLoader.load( url, callback, textureFolderPath);
