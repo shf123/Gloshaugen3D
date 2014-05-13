@@ -50,8 +50,8 @@ var addCamera = function( width, height ) {
 
 var addControls = function() {
 	controls = new THREE.FlyControls( camera );
-	controls.movementSpeed = 0.5;
- 	controls.rollSpeed = 0.015;
+	controls.movementSpeed = 0.5 * 20;
+ 	controls.rollSpeed = 0.015 * 20;
  	controls.dragToLook = true;
 
 }
@@ -162,8 +162,10 @@ var render = function ()  {
 	collisionDetection.blockCollidingDirections( "FlyControls", controls ); 
 	
 
+	var deltaTime = clock.getDelta();
 
-	controls.update(1); // TODO: Insert diffTime instead of constant
+	controls.update(deltaTime); 
+
 	if ( oculus ) {
 		if ( oculusOrientation ) {
 			// Changed from xyzw to xzyw. Looking up/downwards does not feel right.
@@ -217,6 +219,7 @@ var debugVariable;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
 var useOculus = getParameterFromUrl("oculus") === "true" ;
 
+var clock = new THREE.Clock( true );
 
 init();
 
