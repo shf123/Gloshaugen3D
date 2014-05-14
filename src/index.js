@@ -142,9 +142,9 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 		flyThroughPositionsFromFile( recordingPath, camera, useRotations)
 	}
 	else if ( flyThroughRecording ) {
-		var waitTimeBetweenRecordings = 50; // ms
+		var waitTimeBetweenRecordings = 1000/40; // ms
 		var totalRecordTime = 5000; // ms
-		recordPositions( camera, 50, 5000 ); 
+		recordPositions( camera, waitTimeBetweenRecordings, totalRecordTime ); 
 	}
 }
 
