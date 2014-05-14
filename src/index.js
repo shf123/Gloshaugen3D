@@ -61,7 +61,7 @@ var addCollisionDetection = function() {
 var addRenderer = function( width, height ) {
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( width, height );
-	renderer.setClearColor( 0x222299 );
+	renderer.setClearColor( 0x87CEEB );
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
 }
 
