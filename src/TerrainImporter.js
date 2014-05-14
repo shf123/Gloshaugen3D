@@ -71,6 +71,12 @@ function TerrainImporter ( callback ) {
 	};
 
 	var makeTerrainMaterial = function( terrainInfo ) {
+		
+		// for testing purposes:
+		if (getParameterFromUrl("randonTerrainColor") === "true" ) {
+			return new THREE.MeshLambertMaterial( { color:'#'+ Math.floor(Math.random()*16777215).toString(16) });
+		}
+
 		var bbox = terrainInfo.bbox;
 		
 		var wmsName;
@@ -81,7 +87,7 @@ function TerrainImporter ( callback ) {
 			wmsName = "wmsKartverket";
 		}
 
-		return new THREE.MeshLambertMaterial( { map: getMapTextureWms( bbox, 1000, 1000, wmsName ) } ); 
+		return new THREE.MeshLambertMaterial( { map: getMapTextureWms( bbox, 1000, 1000, wmsName ), face:THREE.DoubleSide } ); 
 	};	
 
 	var makeTerrainMesh = function( terrainGeometry, terrainMaterial ) {

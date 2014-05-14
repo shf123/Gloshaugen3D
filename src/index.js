@@ -40,7 +40,8 @@ var addScene = function() {
 }
 
 var addCamera = function( width, height ) {
-	camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 10000 );
+	// note: 10000 as far value is quite high. Entering more resonable value to see if performance increases
+	camera = new THREE.PerspectiveCamera( 45, width / height, 0.1, 1000 );
 	camera.position.x = getParameterFromUrl("x")*1 || 10;
 	camera.position.y = getParameterFromUrl("y")*1 || 0;
 	camera.position.z = getParameterFromUrl("z")*1 || 12; // TODO: Less hardcoded
@@ -64,6 +65,7 @@ var addCollisionDetection = function() {
 var addRenderer = function( width, height ) {
 	renderer = new THREE.WebGLRenderer();
 	renderer.setSize( width, height );
+	renderer.setClearColor( 0x222299 );
 	document.getElementById( "threejs" ).appendChild( renderer.domElement );
 }
 
@@ -130,7 +132,8 @@ var addTerrainAndBuildings = function() {
 
 var addBuildingsCallback =  function( terrainMesh, terrainInfo, scale ) {
 	scene.add( terrainMesh );
-	addBuildingsToScene( terrainInfo, scale, scene,  render ); // import3dBuildings.js
+
+	addBuildingsToScene( terrainInfo, scale, scene,  function() { console.log( "Building callback called" ); } ); // import3dBuildings.js
 }
 
 var handlePotensiallyGivenFlythroughParameters = function() {
@@ -145,9 +148,9 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 		flyThroughPositionsFromFile( recordingPath, camera, useRotations)
 	}
 	else if ( flyThroughRecording ) {
-		var waitTimeBetweenRecordings = 50; // ms
+		var waitTimeBetweenRecordings = 1000/40; // ms
 		var totalRecordTime = 5000; // ms
-		recordPositions( camera, 50, 5000 ); 
+		recordPositions( camera, waitTimeBetweenRecordings, totalRecordTime ); 
 	}
 }
 
@@ -222,7 +225,7 @@ var useOculus = getParameterFromUrl("oculus") === "true" ;
 var clock = new THREE.Clock( true );
 
 init();
-
+render();
 
 
 
