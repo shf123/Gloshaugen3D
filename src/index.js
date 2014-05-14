@@ -122,7 +122,7 @@ var addTerrainAndBuildings = function() {
 	
 	if ( getParameterFromUrl('wcs') === "true" ) {
 		var wcsName = "wcsKartverket";
-		var bbox = "569900,7032300,570500,7033300";
+		var bbox = "569800,7032300,570500,7033300";
 		terrainImporter.importTerrainWCS( wcsName, bbox );
 	}
 	else {
