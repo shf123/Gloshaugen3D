@@ -163,7 +163,9 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 			helper(i, filePaths[i]);
 		}
 
-		whenFinished(); // render()
+		console.log("Checkpoint, end of callbackGetFiles")
+		whenFinished(); // As suspected, it is called before buldings is loaded. It is unfortunate with to methods of same name.
+
 	
 	}
 
@@ -244,6 +246,7 @@ var loadJsonBuilding = function( url, callback)  {
 	// give folder path: 
 	var textureFolderPath = url.replace(".js","") + "/";
 
+	// shrinked: should have been called shrunk
 	if ( getParameterFromUrl("shrinked") === "true" ) {
 		textureFolderPath = textureFolderPath + "shrinked/";
 	}
