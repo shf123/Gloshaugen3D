@@ -56,7 +56,7 @@ function TerrainImporter ( callback ) {
 		var heightSegments = terrainInfo.yVertices() - 1;
 		
 		var terrainHeight = 200; 
-		var terrainWidth = terrainHeight * terrainInfo.xyVerticesRatio(); 
+		var terrainWidth = terrainHeight * terrainInfo.xyLengthRatio(); 
 
 		return new THREE.PlaneGeometry( terrainWidth, terrainHeight, widthSegments, heightSegments);	
 	};
@@ -202,6 +202,9 @@ function TerrainImporter ( callback ) {
 			}, 
 			"yVertices" : function() {
 				return ( this.maxY - this.minY ) / this.resolutionY + 1 ;
+			},
+			"xyLengthRatio" : function() {
+				return ( maxX-minX ) / ( maxY-minY ) ;
 			}
 		};
 
