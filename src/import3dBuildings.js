@@ -65,7 +65,7 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 
 				// render buildings without the image texture, to compare performance
 				if (getParameterFromUrl("greyBuildingColors") === "true" ) {
-					var material = new THREE.MeshBasicMaterial( { color:'#555555', face:THREE.DoubleSide }); 
+					var material = new THREE.MeshLambertMaterial( { color:'#' + 111111*Math.floor(Math.random()*9), side:THREE.DoubleSide }); 
 				}
 				else {
 					var material = new THREE.MeshFaceMaterial( materials );
