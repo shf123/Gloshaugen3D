@@ -136,6 +136,7 @@ var addBuildingsToScene = function( terrainInfo, scale, scene, whenFinished  ) {
 					georeferenceBuilding( object, coords, terrainInfo, scale, objtype );
 					
 					scene.add( object );
+					console.log("%cAdded a building at: " + window.performance.now(),"color:orange");
 				
 				} 
 				$.get( urlKml, kmlFileLoaded );
