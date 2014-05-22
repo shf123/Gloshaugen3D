@@ -46,11 +46,17 @@ var savePositions = function( fileName, states ) {
 	var statesString = JSON.stringify(states);
 	console.log(statesString);
 
-	// save to file. 
-	var htmlElement = document.createElement('a');
-	htmlElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(statesString));
-	htmlElement.setAttribute("download", fileName );
-	htmlElement.click();
+	// save to file. // http://stackoverflow.com/a/20194533 seem to work.
+	var a = window.document.createElement('a');
+	a.href = window.URL.createObjectURL(new Blob([statesString], {type: 'text/plain'}));
+	a.download = fileName;
+
+	// Append anchor to body.
+	document.body.appendChild(a);
+	a.click();
+
+	// Remove anchor from body
+	document.body.removeChild(a);
 }
 
 var savePositionsInLocalStorage = function( key, values ) {
