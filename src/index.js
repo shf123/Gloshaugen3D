@@ -22,9 +22,6 @@ var init = function() {
 	addStats(); 
 	addEventlisteners();
 
-	// TODO: remove. Not useful
-	addSomeDebugStuffIfDebug()
-
 	
 	addTerrainAndBuildings();
 	
@@ -103,21 +100,6 @@ var addEventlisteners = function() {
 }
 
 
-var addSomeDebugStuffIfDebug = function() {
-	if (debug) {
-		// XYZ-axis
-		var axisHelper = new THREE.AxisHelper( 500 ); 
-		scene.add( axisHelper );
-		
-		// Grid below the terrain
-		var gridHelper = new THREE.GridHelper( 150,10 );
-		gridHelper.setColors( 0x888822, 0x888888 );
-		gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
-		scene.add(gridHelper);
-
-	}
-}
-
 var addTerrainAndBuildings = function() {
 	console.log("%cAdding terrain at: " + window.performance.now(),"color:blue");
 
@@ -176,7 +158,6 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 	}
 }
 
-
 var render = function ()  {
 	renderCounter.counter++;
 
@@ -232,6 +213,22 @@ var getParameterFromUrl = function( parameter ) {
 	
 	return undefined;
 }
+
+// calculate average FPS
+var getAverageFPS = function( time, callback ) {
+
+	var startTime = window.performance.now();
+	var startFrameCount = renderCounter.counter;
+
+	setTimeout(function(){
+		var endTime = window.performance.now();
+		var endFrameCount = renderCounter.counter;
+		var averageFPS = 1000 * ( endFrameCount - startFrameCount ) / ( endTime - startTime );
+		console.log("AverageFPS: " + averageFPS);
+
+	}, time);
+}
+
 
 // Check webgl
 if ( !Detector.webgl ) {
