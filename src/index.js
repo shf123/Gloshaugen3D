@@ -20,9 +20,6 @@ var init = function() {
 
 	addStats(); 
 	addEventlisteners();
-
-	// TODO: remove. Not useful
-	addSomeDebugStuffIfDebug()
 	
 	addTerrainAndBuildings();
 	
@@ -97,20 +94,6 @@ var addEventlisteners = function() {
 	window.addEventListener('resize', onResize, false);
 }
 
-var addSomeDebugStuffIfDebug = function() {
-	if (debug) {
-		// XYZ-axis
-		var axisHelper = new THREE.AxisHelper( 500 ); 
-		scene.add( axisHelper );
-		
-		// Grid below the terrain
-		var gridHelper = new THREE.GridHelper( 150,10 );
-		gridHelper.setColors( 0x888822, 0x888888 );
-		gridHelper.rotation = new THREE.Euler(Math.PI/2, 0,0)
-		scene.add(gridHelper);
-
-	}
-}
 
 var addTerrainAndBuildings = function() {
 	console.log("%cAdding terrain at: " + window.performance.now(),"color:blue");
