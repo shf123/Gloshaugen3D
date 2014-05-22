@@ -153,7 +153,6 @@ var handlePotensiallyGivenFlythroughParameters = function() {
 	}
 }
 
-
 var render = function ()  {
 	renderCounter.counter++;
 
@@ -209,6 +208,22 @@ var getParameterFromUrl = function( parameter ) {
 	
 	return undefined;
 }
+
+// calculate average FPS
+var getAverageFPS = function( time, callback ) {
+
+	var startTime = window.performance.now();
+	var startFrameCount = renderCounter.counter;
+
+	setTimeout(function(){
+		var endTime = window.performance.now();
+		var endFrameCount = renderCounter.counter;
+		var averageFPS = 1000 * ( endFrameCount - startFrameCount ) / ( endTime - startTime );
+		console.log("AverageFPS: " + averageFPS);
+
+	}, time);
+}
+
 
 // Check webgl
 if ( !Detector.webgl ) {
