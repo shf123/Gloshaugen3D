@@ -22,7 +22,7 @@ var init = function() {
 	addStats(); 
 	addEventlisteners();
 
-
+	// TODO: remove. Not useful
 	addSomeDebugStuffIfDebug()
 
 	
@@ -30,7 +30,8 @@ var init = function() {
 	
 	handlePotensiallyGivenFlythroughParameters();
 	
-	
+	// debugging
+	//camera.position.z = 250; camera.lookAt(new THREE.Vector3(0,0,0));
 	
 }
 
@@ -118,6 +119,8 @@ var addSomeDebugStuffIfDebug = function() {
 }
 
 var addTerrainAndBuildings = function() {
+	console.log("%cAdding terrain at: " + window.performance.now(),"color:blue");
+
 	var terrainImporter = new TerrainImporter( addBuildingsCallback );
 	
 	if ( getParameterFromUrl('wcs') === "true" ) {
@@ -133,29 +136,49 @@ var addTerrainAndBuildings = function() {
 var addBuildingsCallback =  function( terrainMesh, terrainInfo, scale ) {
 	scene.add( terrainMesh );
 
+	console.log("%cTerrain added at: " + window.performance.now(), "color:blue");
+
 	addBuildingsToScene( terrainInfo, scale, scene,  function() { console.log( "Building callback called" ); } ); // import3dBuildings.js
 }
 
 var handlePotensiallyGivenFlythroughParameters = function() {
-	var flyThroughRecording = getParameterFromUrl("record") === "true";
+	//var flyThroughRecording = getParameterFromUrl("record") === "true";
 	var flyThrough = getParameterFromUrl("fly") === "true";
-
+	var localStorage = getParameterFromUrl("flyLocal") === "true";
 
 	if ( flyThrough ) {
-		var useRotations = true;
-		var recordingName = getParameterFromUrl("recordingName") || "flythrough.txt";
-		var recordingPath = "../assets/flyThroughRecordings/" + recordingName;
-		flyThroughPositionsFromFile( recordingPath, camera, useRotations)
-	}
-	else if ( flyThroughRecording ) {
-		var waitTimeBetweenRecordings = 1000/40; // ms
-		var totalRecordTime = 5000; // ms
-		recordPositions( camera, waitTimeBetweenRecordings, totalRecordTime ); 
+
+		// start flythrough when pressing spacebar
+		$(document).keypress(function(e) {
+		    if (e.which === 79 || e.which === 111 || e.which === 32) { // the letter o OR O OR space bar   
+				var useRotations = true;
+				
+				if (!localStorage) {
+					var recordingName = getParameterFromUrl("recordingName") || "flythrough.txt";
+					var recordingPath = "../assets/flyThroughRecordings/" + recordingName;
+					flyThroughPositionsFromFile( recordingPath, camera, useRotations, renderCounter);
+				}
+				else {
+					flyThroughPositionsFromLocalStorage( "flyRecording", camera, useRotations, renderCounter );
+				}
+		    }
+			
+			else if (e.which === 80 || e.which === 112) { // the letter p OR P           
+		        var waitTimeBetweenRecordings = 1000/60; // ms
+				var totalRecordTime = getParameterFromUrl("recordtime") || 5000; // ms
+				recordPositions( camera, waitTimeBetweenRecordings, totalRecordTime, localStorage ); 
+		    }
+	
+
+		});
+		
+	
 	}
 }
 
 
 var render = function ()  {
+	renderCounter.counter++;
 
 	stats.begin();
 
@@ -222,7 +245,8 @@ var debugVariable;
 var debug = getParameterFromUrl("debug") || false; // show some debug info
 var useOculus = getParameterFromUrl("oculus") === "true" ;
 
-var clock = new THREE.Clock( true );
+var clock = new THREE.Clock( true ); // used to calculate ms diff in render().
+var renderCounter = {counter: 0};
 
 init();
 render();

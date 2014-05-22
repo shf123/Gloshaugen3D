@@ -1,11 +1,11 @@
 
-var recordPositions = function( camera, intervallTime, maxTime ) {
+var recordPositions = function( camera, intervallTime, maxTime, useLocalStorage ) {
 
 	console.log("Recording states");
 
 	var addPosition = function( states, posIndex ) {
 		
-		var time = new Date().getTime() - startTime;
+		var time = window.performance.now() - startTime;
 
 		states.push({ 
 			timestamp : time,
@@ -15,11 +15,17 @@ var recordPositions = function( camera, intervallTime, maxTime ) {
 
 		if ( time >= maxTime ) {
 			clearInterval( recorder )
-			savePositions( "flyRecording.txt", states );
+			
+			if (useLocalStorage) {
+				savePositionsInLocalStorage("flyRecording", states)
+			}
+			else {
+				savePositions( "flyRecording.txt", states );
+			}
 		}
 	}
 
-	var startTime = new Date().getTime();
+	var startTime = window.performance.now();
 	
 	var states = []; // format: {timestamp, position, rotations}  position: new THREE.Vector3(x,y,z) quaternion: new THREE.Quaternion (_x, _y,_z,_w...)
 	var counter = 0;
@@ -40,25 +46,53 @@ var savePositions = function( fileName, states ) {
 	var statesString = JSON.stringify(states);
 	console.log(statesString);
 
-	// save to file. 
-	var htmlElement = document.createElement('a');
-	htmlElement.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(statesString));
-	htmlElement.setAttribute("download", fileName );
-	htmlElement.click();
+	// save to file. // http://stackoverflow.com/a/20194533 seem to work.
+	var a = window.document.createElement('a');
+	a.href = window.URL.createObjectURL(new Blob([statesString], {type: 'text/plain'}));
+	a.download = fileName;
+
+	// Append anchor to body.
+	document.body.appendChild(a);
+	a.click();
+
+	// Remove anchor from body
+	document.body.removeChild(a);
 }
 
+var savePositionsInLocalStorage = function( key, values ) {
+	
+	// stringify converts  position to {x:xValue, y:Value, zValue} instead of new THREE.Vector3(...)
+	var value = JSON.stringify(values);
+	//console.log(value);
 
-// controller is needed since it might block the rotations. it will be "disabled" in the beginning and "activiated" in the end
-var flyThroughPositionsFromFile = function( path, camera, controller, useRotations ) {
+	localStorage.setItem(key, value);
+}
+
+var flyThroughPositionsFromFile = function( path, camera, useRotations, renderCounter ) {
 
 	$.get( path, function( jsonTextFile ){ 
 		var states = JSON.parse(jsonTextFile);
-		flyThroughPositions( camera, states, controller, useRotations ); 
+		flyThroughPositions( camera, states, useRotations, renderCounter); 
 	});
 
 }
 
-var flyThroughPositions = function( camera, states, controller, useRotations ) {
+var flyThroughPositionsFromLocalStorage = function( key, camera, useRotations, renderCounter ) {
+
+	var locStorage = localStorage.getItem(key);
+	var states = JSON.parse(locStorage);
+	flyThroughPositions( camera, states, useRotations, renderCounter ); 
+	
+
+}
+
+
+var flyThroughPositions = function( camera, states, useRotations, renderCounter ) {
+
+	var renderCountStart = renderCounter.counter;
+	var timeStart = window.performance.now();
+
+	console.log("Render count before flythrough: " + renderCounter.counter );
 
 
 	// recursive function
@@ -78,6 +112,15 @@ var flyThroughPositions = function( camera, states, controller, useRotations ) {
 
 			if ( states.length > (i + 1) ) {
 				setStates( states,  i + 1);
+			}
+			// finished
+			else {
+				
+				var renderCountFinished = renderCounter.counter;
+				var timeFinished = window.performance.now();
+				var averageFPS = 1000 * ( renderCountFinished - renderCountStart ) / ( timeFinished - timeStart ); 
+				console.log("Render count after flythrough: " + renderCounter.counter );
+				console.log("Average FPS: " + averageFPS );
 			}
 
 		}, waitTime );
