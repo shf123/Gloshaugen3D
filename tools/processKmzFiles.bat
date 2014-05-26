@@ -53,7 +53,6 @@ for %%f in (*.kmz) do (
 		rem "move and rename untitled(image folder)" 
 		mkdir "%commonDaeFolder%\%fileName%" 
 		move "%imageFolder1%\*" "%commonDaeFolder%\%fileName%" 
-		pause
 
 		rem "the images-path inside the dae-file needs to be changed"
 		echo replaceInFile.py --files "%commonDaeFolder%\%fileName%.dae"  --findReplace "%imageFolder1Name%/" "%fileName%/"
