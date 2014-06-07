@@ -7,8 +7,10 @@ the buildings in Gløshaugen were made by students at NTNU.
 
 Some url options: <br>
 useStoredTexture = true : not use WMS <br>
-model = obj : use 3d-models in .obj format(only hovedbygget now) <br>
-model = js : use 3d-models in .js format <br>
-model = \<anything else\> : use 3d-models in .dae format. (most files in this format) <br>
+model = js : use 3d-models in .js format. (Recommended) <br>
+model = obj : use 3d-models in .obj format. <br>
+model = \<anything else\> : use 3d-models in .dae format. <br>
 norgeIBilder = true : use ortofoto instead of "normal map texture" <br>
-oculus = true : use oculus rift. (In a early phase. "Oculus Bridge.exe" must be running.)
+oculus = true : use oculus rift. ("Oculus Bridge.exe" must be running.) <br> 
+fly = true : enable flythrough and flythrough recording (by pushing O/P) <br>
+flyLocal = true : use/add data  locally(in browser) <br>
