@@ -388,7 +388,6 @@ var georeferenceBuilding = function ( object , buildingInfo, terrainInfo, scale,
 	}
 	
 
-	// x and y is possible not exactly right since it does not fit the map texture exactly
 	object.position.x = (buildingInfo.X - terrainInfo.averageX())*scale.x;
 	object.position.y = (buildingInfo.Y - terrainInfo.averageY())*scale.y;
 

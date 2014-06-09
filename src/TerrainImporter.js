@@ -10,7 +10,10 @@ function TerrainImporter ( callback ) {
 	};
 
 	this.importTerrainWCS = function( wcsName, bbox ) {
-		var url = wcsServices.toString( wcsName, bbox, 100, 100 ); // width and height = 100
+		// it is not ideal that width and height is hardcoded. This will cause the resolution to depend on the bbox.
+		// The parameters RESX and RESY may be safer to use instead of WIDTH and HEIGHT. 
+		var url = wcsServices.toString( wcsName, bbox, 100, 100 ); // width and height = 100.
+
 		
 		var format = wcsServices[wcsName].parameters.format;
 		switch(format) {
